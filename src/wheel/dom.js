@@ -2,7 +2,6 @@
 import { warn } from '../utils/debug';
 import { MAX_EXCEED } from './constant';
 import { prefixStyle } from '../utils/prefixStyle';
-// import { MAX_EXCEED, VISIBLE_RANGE, DEFAULT_ITEM_HEIGHT, BLUR_WIDTH } from './constant';
 /**
  * 初始化模块
  *

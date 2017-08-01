@@ -203,7 +203,6 @@ function prefixStyle(style) {
   return vendor + style.charAt(0).toUpperCase() + style.substr(1);
 }
 
-// import { MAX_EXCEED, VISIBLE_RANGE, DEFAULT_ITEM_HEIGHT, BLUR_WIDTH } from './constant';
 /**
  * 初始化模块
  *
