@@ -1,14 +1,16 @@
-import { MAX_EXCEED, VISIBLE_RANGE, DEFAULT_ITEM_HEIGHT, BLUR_WIDTH } from './core/constant';
 
 import {warn} from './utils/debug';
 
-import { easing } from './utils/easing';
-import { rad2deg } from './utils/rad2deg';
+// import { easing } from './utils/easing';
+// import { rad2deg } from './utils/rad2deg';
 
-import { isIos } from './utils/browser';
-import { EVENT_TYPE } from './utils/eventType';
+// import { EVENT_TYPE } from './utils/eventType';
 
-import { eventModule } from './wheel/event';
+import { eventModule } from './utils/event';
+
+import { domModule } from './wheel/dom';
+import { coreModule } from './wheel/core';
+import { initModule } from './wheel/init';
 /**
  * picker滚轮
  *
@@ -16,7 +18,14 @@ import { eventModule } from './wheel/event';
  * @param {Object|undefined} options 选项
  */
 function Wheel (el, options) {
-
+    let _that = this;
+    // let _el = typeof el === 'string' ? document.querySelector(el) : el;
+    el = _that._getElements(el)[0];
+    if (!el) {
+      warn('can not resolve the wrapper dom');
+    } else {
+        _that._init(el, options);
+    }
 }
 
 Wheel.use = function(Fn, options) {
@@ -25,11 +34,14 @@ Wheel.use = function(Fn, options) {
     } else if (Fn && Fn.default instanceof Function) {
         Fn.default(Wheel, options);
     } else {
-        warn('can not resolve the wrapper dom');
+        warn('can not resolve the use module');
     }
 };
 
 Wheel.use(eventModule);
+Wheel.use(domModule);
+Wheel.use(coreModule);
+Wheel.use(initModule);
 
 Wheel.Version = '1.0.0';
 

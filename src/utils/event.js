@@ -7,7 +7,7 @@
 export function eventModule(Fn) {
     Fn.prototype.on = function (type, fn, context = this) {
         let _that = this;
-
+        _that._events = _that._events || {};
         _that._events[type] = _that._events[type] || [];
 
         _that._events[type].push([fn, context]);
@@ -51,7 +51,8 @@ export function eventModule(Fn) {
     };
 
     Fn.prototype.trigger = function (type) { // 执行事件
-        let events = this._events[type];
+        let _that = this;
+        let events = (_that._events && _that._events[type]);
         if (!events) {
             return;
         }

@@ -7,10 +7,146 @@
     <title>Wheel demo</title>
     <script src="../dist/Wheel.js"></script>
     <script>
-        new Wheel();
+        window.onload = function() {
+            var wheel = new Wheel.Wheel('.wheel-wrap', {
+                wheelEl: '.wheel',
+                wheelItemEl: '.wheel-item'
+            });
+            wheel.on('beforeInit', () => { // 初始化之前
+                console.log('beforeInit');
+            })
+
+            wheel.on('init', () => { // 初始化后
+                console.log('init');
+            })
+
+            wheel.on('scrollStart', (data) => { // 开始滚动
+                console.log('scrollStart', data);
+            })
+
+            wheel.on('scroll', (data) => { // 正在滚动
+                console.log('scroll', data);
+            })
+
+            wheel.on('scrollEnd', (data) => { // 滚动结束后
+                console.log('scrollEnd', data);
+            })
+
+            wheel.wheelTo(5, 200);
+        }
     </script>
+    <style>
+    .wheel-box {
+        background-color: #ddd;
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+        border: solid 1px rgba(0, 0, 0, 0.1);
+        -webkit-user-select: none;
+        user-select: none;
+        box-sizing: border-box;
+        list-style: none;
+    }
+    .wheel-wrap {
+        box-sizing: border-box;
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        -webkit-mask-box-image: -webkit-linear-gradient(bottom, transparent, transparent 5%, #fff 20%, #fff 80%, transparent 95%, transparent);
+        -webkit-mask-box-image: linear-gradient(top, transparent, transparent 5%, #fff 20%, #fff 80%, transparent 95%, transparent);
+    }
+    .wheel,
+    .wheel-rule {
+        box-sizing: border-box;
+        padding: 0px;
+        margin: 0px;
+        width: 100%;
+        height: 36px;
+        line-height: 36px;
+        position: absolute;
+        left: 0px;
+        top: 50%;
+        margin-top: -18px;
+    }
+    .wheel-rule-bg {
+        z-index: 0;
+        /*background-color: #cfd5da;*/
+    }
+    .wheel-rule-ft {
+        z-index: 2;
+        border-top: solid 1px rgba(0, 0, 0, 0.1);
+        border-bottom: solid 1px rgba(0, 0, 0, 0.1);
+        /*-webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);*/
+        /*box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);*/
+    }
+    .wheel {
+        z-index: 1;
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+        -webkit-transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+        transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+    }
+    .wheel .wheel-item {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        text-align: center;
+        vertical-align: middle;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        overflow: hidden;
+        box-sizing: border-box;
+        font-size: 16px;
+        font-family: "Helvetica Neue", "Helvetica", "Arial", "sans-serif";
+        color: #888;
+        padding: 0px 8px;
+        white-space: nowrap;
+        -webkit-text-overflow: ellipsis;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        cursor: default;
+        visibility: hidden;
+        list-style: none;
+    }
+    .wheel .wheel-item.active,
+    .wheel .wheel-item.visible {
+        visibility: visible;
+    }
+    .wheel .wheel-item.active {
+        color: #222;
+    }
+    </style>
 </head>
 <body>
-
+    <div class="wheel-box">
+        <div class="wheel-wrap">
+            <div class="wheel-rule wheel-rule-ft"></div>
+            <ul class="wheel">
+                <!-- li.wheel-item*20>{$xxxxxxxx} -->
+                <li class="wheel-item">1xxxxxxxx</li>
+                <li class="wheel-item">2xxxxxxxx</li>
+                <li class="wheel-item">3xxxxxxxx</li>
+                <li class="wheel-item">4xxxxxxxx</li>
+                <li class="wheel-item">5xxxxxxxx</li>
+                <li class="wheel-item">6xxxxxxxx</li>
+                <li class="wheel-item">7xxxxxxxx</li>
+                <li class="wheel-item">8xxxxxxxx</li>
+                <li class="wheel-item">9xxxxxxxx</li>
+                <li class="wheel-item">10xxxxxxxx</li>
+                <li class="wheel-item">11xxxxxxxx</li>
+                <li class="wheel-item">12xxxxxxxx</li>
+                <li class="wheel-item">13xxxxxxxx</li>
+                <li class="wheel-item">14xxxxxxxx</li>
+                <li class="wheel-item">15xxxxxxxx</li>
+                <li class="wheel-item">16xxxxxxxx</li>
+                <li class="wheel-item">17xxxxxxxx</li>
+                <li class="wheel-item">18xxxxxxxx</li>
+                <li class="wheel-item">19xxxxxxxx</li>
+                <li class="wheel-item">20xxxxxxxx</li>
+            </ul>
+            <div class="wheel-rule wheel-rule-bg"></div>
+        </div>
+    </div>
 </body>
 </html>

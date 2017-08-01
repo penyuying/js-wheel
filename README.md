@@ -16,8 +16,10 @@ npm install js-wheel
 ## Usage
 
 ~~~ javascript
-    import {Wheel} from 'js-wheel'
+    import { Wheel } from 'js-wheel'
 
-
+    new Wheel('#wheel', {
+        xxx: 0
+    });
 
 ~~~
