@@ -45,5 +45,9 @@
   },
   "types": "./types/Wheel.d.ts",
   "author": "penyuying",
-  "license": "MIT"
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/penyuying/js-wheel/issues"
+  },
+  "homepage": "https://github.com/penyuying/js-wheel#readme"
 }

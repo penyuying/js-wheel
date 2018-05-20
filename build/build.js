@@ -20,4 +20,10 @@ build(generateConfig([{
     output: {
         file: resolve(dist + '/' + name + '.min.js')
     }
+},{
+    input: resolve(src),
+    name: name,
+    output: {
+        file: resolve('docs/' + dist + '/' + name + '.min.js')
+    }
 }]));

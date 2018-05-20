@@ -6,7 +6,10 @@ picker的滚轮
 
 You can use this package on the server side as well as the client side.
 
+### [DEMO](https://penyuying.github.io/js-wheel/)
+
 ### [Node.js](http://nodejs.org/):
+
 
 ~~~
 npm install js-wheel
