@@ -176,29 +176,6 @@ export function coreModule(Wheel) {
             typeof force === 'function' && force();
         }, 0);
     };
-    Wheel.prototype._setItemVisibility = function (angle) {
-        let _that = this;
-        let _options = _that._options;
-        _that._elItems.forEach(function (item) {
-            let difference = Math.abs(item.angle - angle);
-            if (difference < _that.hightlightRange) {
-                item.classList.add(_options.activeCls);
-            } else if (difference < _that.visibleRange) {
-                item.classList.add(_options.visibleCls);
-                item.classList.remove(_options.activeCls);
-            } else {
-                item.classList.remove(_options.activeCls);
-                item.classList.remove(_options.visibleCls);
-            }
-        });
-    };
-    Wheel.prototype._setAngle = function (angle) {
-        let _that = this;
-        let _options = _that._options;
-        _that._angle = angle;
-        _that._wheelEl.style[prefixStyle('transform')] = 'perspective(' + _options.perspective + ') rotateY(0deg) rotateX(' + angle + 'deg)';
-        _that._setItemVisibility(angle);
-    };
     Wheel.prototype._calcAngle = function (c) { // 计算角度
         let _that = this;
         let b = parseFloat(_that.r);

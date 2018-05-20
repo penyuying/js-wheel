@@ -217,7 +217,7 @@ function eventModule(Fn) {
 }
 
 var MAX_EXCEED = 30; // 最大超过角度
-var VISIBLE_RANGE = 90; // 可视角度(高亮)
+var VISIBLE_RANGE = 180; // 可视角度
 var DEFAULT_ITEM_HEIGHT = 40; // 列表项默认高度
 var BLUR_WIDTH = 10; // 模糊度(blur滤镜)
 
@@ -337,6 +337,30 @@ function domModule(Wheel) {
         });
         _that.endExceed = _that.endAngle + MAX_EXCEED;
         _that._setItemVisibility(_that.beginAngle);
+    };
+
+    Wheel.prototype._setItemVisibility = function (angle) {
+        var _that = this;
+        var _options = _that._options;
+        _that._elItems.forEach(function (item) {
+            var difference = Math.abs(item.angle - angle);
+            if (difference < _that.hightlightRange) {
+                item.classList.add(_options.activeCls);
+            } else if (difference < _that.visibleRange) {
+                item.classList.add(_options.visibleCls);
+                item.classList.remove(_options.activeCls);
+            } else {
+                item.classList.remove(_options.activeCls);
+                item.classList.remove(_options.visibleCls);
+            }
+        });
+    };
+    Wheel.prototype._setAngle = function (angle) {
+        var _that = this;
+        var _options = _that._options;
+        _that._angle = angle;
+        _that._wheelEl.style[prefixStyle('transform')] = 'perspective(' + _options.perspective + ') rotateY(0deg) rotateX(' + angle + 'deg)';
+        _that._setItemVisibility(angle);
     };
 }
 
@@ -555,29 +579,6 @@ function coreModule(Wheel) {
             _that.lastIndex = index;
             typeof force === 'function' && force();
         }, 0);
-    };
-    Wheel.prototype._setItemVisibility = function (angle) {
-        var _that = this;
-        var _options = _that._options;
-        _that._elItems.forEach(function (item) {
-            var difference = Math.abs(item.angle - angle);
-            if (difference < _that.hightlightRange) {
-                item.classList.add(_options.activeCls);
-            } else if (difference < _that.visibleRange) {
-                item.classList.add(_options.visibleCls);
-                item.classList.remove(_options.activeCls);
-            } else {
-                item.classList.remove(_options.activeCls);
-                item.classList.remove(_options.visibleCls);
-            }
-        });
-    };
-    Wheel.prototype._setAngle = function (angle) {
-        var _that = this;
-        var _options = _that._options;
-        _that._angle = angle;
-        _that._wheelEl.style[prefixStyle('transform')] = 'perspective(' + _options.perspective + ') rotateY(0deg) rotateX(' + angle + 'deg)';
-        _that._setItemVisibility(angle);
     };
     Wheel.prototype._calcAngle = function (c) {
         // 计算角度
