@@ -9,6 +9,10 @@ import { prefixStyle } from '../utils/prefixStyle';
  * @param {Function} Wheel 构造函数
  */
 export function domModule(Wheel) {
+    /**
+     * 列表
+     *
+     */
     Wheel.prototype._resetItems = function() {
         let _that = this;
         let _options = _that._options;
@@ -24,6 +28,11 @@ export function domModule(Wheel) {
             warn('can not resolve the wheel dom');
         }
     };
+    /**
+     * 初始化轮元素
+     *
+     * @param {HTMLElement} el 轮的包裹盒子元素
+     */
     Wheel.prototype._initEl = function (el) {
         let _that = this;
         let _options = _that._options;
@@ -36,9 +45,9 @@ export function domModule(Wheel) {
     /**
      * 获取元素列表
      *
-     * @param {any} el 元素列表、元素标签名称、class名称或空
-     * @param {any} [pEl=document] 父节点
-     * @returns {Elements} 元素列表
+     * @param {HTMLElement} el 元素列表、元素标签名称、class名称或空
+     * @param {HTMLElement} [pEl=document] 父节点
+     * @returns {HTMLElements} 元素列表
      */
     Wheel.prototype._getElements = function(el, pEl = document) {
         let _el;
@@ -55,46 +64,51 @@ export function domModule(Wheel) {
         }
         return _el || [];
     };
-
-    Wheel.prototype._calcElementItemPostion = function (andGenerateItms) { // 设置列表项的角度
+    /**
+     * 设置列表项的角度
+     *
+     */
+    Wheel.prototype._calcElementItemPostion = function () {
         let _that = this;
-        // if (andGenerateItms) {
-        //     _that.items = [];
-        // }
         _that._elItems.forEach(function (item, index) {
-            // let index = _that._elItems.indexOf(item);
             _that.endAngle = _that.itemAngle * index;
             item._index = index;
             item.angle = _that.endAngle;
             item.style[prefixStyle('transformOrigin')] = 'center center -' + _that.r + 'px';
             item.style[prefixStyle('transform')] = 'translateZ(' + _that.r + 'px) rotateX(' + (-_that.endAngle) + 'deg)';
-            // if (andGenerateItms) {
-            //     let dataItem = {};
-            //     dataItem.text = item.innerHTML || '';
-            //     dataItem.value = item.getAttribute('data-value') || dataItem.text;
-            //     _that.items.push(dataItem);
-            // }
         });
         _that.endExceed = _that.endAngle + MAX_EXCEED;
         _that._setItemVisibility(_that.beginAngle);
     };
 
+    /**
+     * 设置可范围内的项显示
+     *
+     * @param {Number} angle 当前的角度
+     */
     Wheel.prototype._setItemVisibility = function (angle) {
         let _that = this;
         let _options = _that._options;
+        let activeCls = _options.activeCls;
+        let visibleCls = _options.visibleCls;
         _that._elItems.forEach(function (item) {
             let difference = Math.abs(item.angle - angle);
             if (difference < _that.hightlightRange) {
-                item.classList.add(_options.activeCls);
+                item.classList.add(activeCls);
             } else if (difference < _that.visibleRange) {
-                item.classList.add(_options.visibleCls);
-                item.classList.remove(_options.activeCls);
+                item.classList.add(visibleCls);
+                item.classList.remove(activeCls);
             } else {
-                item.classList.remove(_options.activeCls);
-                item.classList.remove(_options.visibleCls);
+                item.classList.remove(activeCls);
+                item.classList.remove(visibleCls);
             }
         });
     };
+    /**
+     * 设置轮的旋转角度
+     *
+     * @param {Number} angle 角度
+     */
     Wheel.prototype._setAngle = function (angle) {
         let _that = this;
         let _options = _that._options;

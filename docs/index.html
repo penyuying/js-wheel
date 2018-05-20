@@ -64,7 +64,7 @@
         background-color: #ddd;
         position: relative;
         height: 200px;
-        overflow: hidden;
+        /* overflow: hidden; */ /*使用这个时不正常*/
         border: solid 1px rgba(0, 0, 0, 0.1);
         -webkit-user-select: none;
         user-select: none;
@@ -76,7 +76,7 @@
         position: relative;
         width: 100%;
         height: 100%;
-        overflow: hidden;
+        /* overflow: hidden; *//*使用这个时不正常*/
         -webkit-mask-box-image: -webkit-linear-gradient(bottom, transparent, transparent 5%, #fff 20%, #fff 80%, transparent 95%, transparent);
         -webkit-mask-box-image: linear-gradient(top, transparent, transparent 5%, #fff 20%, #fff 80%, transparent 95%, transparent);
     }
@@ -95,14 +95,11 @@
     }
     .wheel-rule-bg {
         z-index: 0;
-        /*background-color: #cfd5da;*/
     }
     .wheel-rule-ft {
         z-index: 2;
         border-top: solid 1px rgba(0, 0, 0, 0.1);
         border-bottom: solid 1px rgba(0, 0, 0, 0.1);
-        /*-webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);*/
-        /*box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);*/
     }
     .wheel {
         z-index: 1;
@@ -119,7 +116,6 @@
         vertical-align: middle;
         -webkit-backface-visibility: hidden;
         backface-visibility: hidden;
-        overflow: hidden;
         box-sizing: border-box;
         font-size: 16px;
         font-family: "Helvetica Neue", "Helvetica", "Arial", "sans-serif";
@@ -140,36 +136,43 @@
     .wheel .wheel-item.active {
         color: #222;
     }
+    .wheel-demo {
+        position: fixed;
+        left: 0;
+        width: 100%;
+    }
     </style>
 </head>
 <body>
-    <div class="wheel-box">
-        <div class="wheel-wrap">
-            <div class="wheel-rule wheel-rule-ft"></div>
-            <ul class="wheel">
-                <!-- li.wheel-item*20>{$xxxxxxxx} -->
-                <li class="wheel-item">1xxxxxxxx</li>
-                <li class="wheel-item">2xxxxxxxx</li>
-                <li class="wheel-item">3xxxxxxxx</li>
-                <li class="wheel-item">4xxxxxxxx</li>
-                <li class="wheel-item">5xxxxxxxx</li>
-                <li class="wheel-item">6xxxxxxxx</li>
-                <li class="wheel-item">7xxxxxxxx</li>
-                <li class="wheel-item">8xxxxxxxx</li>
-                <li class="wheel-item">9xxxxxxxx</li>
-                <li class="wheel-item">10xxxxxxxx</li>
-                <li class="wheel-item">11xxxxxxxx</li>
-                <li class="wheel-item">12xxxxxxxx</li>
-                <li class="wheel-item">13xxxxxxxx</li>
-                <li class="wheel-item">14xxxxxxxx</li>
-                <li class="wheel-item">15xxxxxxxx</li>
-                <li class="wheel-item">16xxxxxxxx</li>
-                <li class="wheel-item">17xxxxxxxx</li>
-                <li class="wheel-item">18xxxxxxxx</li>
-                <li class="wheel-item">19xxxxxxxx</li>
-                <li class="wheel-item">20xxxxxxxx</li>
-            </ul>
-            <div class="wheel-rule wheel-rule-bg"></div>
+    <div class="wheel-demo">
+        <div class="wheel-box">
+            <div class="wheel-wrap">
+                <div class="wheel-rule wheel-rule-ft"></div>
+                <ul class="wheel">
+                    <!-- li.wheel-item*20>{$xxxxxxxx} -->
+                    <li class="wheel-item">1xxxxxxxx</li>
+                    <li class="wheel-item">2xxxxxxxx</li>
+                    <li class="wheel-item">3xxxxxxxx</li>
+                    <li class="wheel-item">4xxxxxxxx</li>
+                    <li class="wheel-item">5xxxxxxxx</li>
+                    <li class="wheel-item">6xxxxxxxx</li>
+                    <li class="wheel-item">7xxxxxxxx</li>
+                    <li class="wheel-item">8xxxxxxxx</li>
+                    <li class="wheel-item">9xxxxxxxx</li>
+                    <li class="wheel-item">10xxxxxxxx</li>
+                    <li class="wheel-item">11xxxxxxxx</li>
+                    <li class="wheel-item">12xxxxxxxx</li>
+                    <li class="wheel-item">13xxxxxxxx</li>
+                    <li class="wheel-item">14xxxxxxxx</li>
+                    <li class="wheel-item">15xxxxxxxx</li>
+                    <li class="wheel-item">16xxxxxxxx</li>
+                    <li class="wheel-item">17xxxxxxxx</li>
+                    <li class="wheel-item">18xxxxxxxx</li>
+                    <li class="wheel-item">19xxxxxxxx</li>
+                    <li class="wheel-item">20xxxxxxxx</li>
+                </ul>
+                <div class="wheel-rule wheel-rule-bg"></div>
+            </div>
         </div>
     </div>
 </body>

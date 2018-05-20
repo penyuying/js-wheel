@@ -217,9 +217,8 @@ function eventModule(Fn) {
 }
 
 var MAX_EXCEED = 30; // 最大超过角度
-var VISIBLE_RANGE = 180; // 可视角度
+var VISIBLE_RANGE = 90; // 可视角度
 var DEFAULT_ITEM_HEIGHT = 40; // 列表项默认高度
-var BLUR_WIDTH = 10; // 模糊度(blur滤镜)
 
 var elementStyle = document.createElement('div').style;
 
@@ -266,6 +265,10 @@ function prefixStyle(style) {
  * @param {Function} Wheel 构造函数
  */
 function domModule(Wheel) {
+    /**
+     * 列表
+     *
+     */
     Wheel.prototype._resetItems = function () {
         var _that = this;
         var _options = _that._options;
@@ -281,6 +284,11 @@ function domModule(Wheel) {
             warn('can not resolve the wheel dom');
         }
     };
+    /**
+     * 初始化轮元素
+     *
+     * @param {HTMLElement} el 轮的包裹盒子元素
+     */
     Wheel.prototype._initEl = function (el) {
         var _that = this;
         var _options = _that._options;
@@ -293,9 +301,9 @@ function domModule(Wheel) {
     /**
      * 获取元素列表
      *
-     * @param {any} el 元素列表、元素标签名称、class名称或空
-     * @param {any} [pEl=document] 父节点
-     * @returns {Elements} 元素列表
+     * @param {HTMLElement} el 元素列表、元素标签名称、class名称或空
+     * @param {HTMLElement} [pEl=document] 父节点
+     * @returns {HTMLElements} 元素列表
      */
     Wheel.prototype._getElements = function (el) {
         var pEl = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
@@ -314,47 +322,51 @@ function domModule(Wheel) {
         }
         return _el || [];
     };
-
-    Wheel.prototype._calcElementItemPostion = function (andGenerateItms) {
-        // 设置列表项的角度
+    /**
+     * 设置列表项的角度
+     *
+     */
+    Wheel.prototype._calcElementItemPostion = function () {
         var _that = this;
-        // if (andGenerateItms) {
-        //     _that.items = [];
-        // }
         _that._elItems.forEach(function (item, index) {
-            // let index = _that._elItems.indexOf(item);
             _that.endAngle = _that.itemAngle * index;
             item._index = index;
             item.angle = _that.endAngle;
             item.style[prefixStyle('transformOrigin')] = 'center center -' + _that.r + 'px';
             item.style[prefixStyle('transform')] = 'translateZ(' + _that.r + 'px) rotateX(' + -_that.endAngle + 'deg)';
-            // if (andGenerateItms) {
-            //     let dataItem = {};
-            //     dataItem.text = item.innerHTML || '';
-            //     dataItem.value = item.getAttribute('data-value') || dataItem.text;
-            //     _that.items.push(dataItem);
-            // }
         });
         _that.endExceed = _that.endAngle + MAX_EXCEED;
         _that._setItemVisibility(_that.beginAngle);
     };
 
+    /**
+     * 设置可范围内的项显示
+     *
+     * @param {Number} angle 当前的角度
+     */
     Wheel.prototype._setItemVisibility = function (angle) {
         var _that = this;
         var _options = _that._options;
+        var activeCls = _options.activeCls;
+        var visibleCls = _options.visibleCls;
         _that._elItems.forEach(function (item) {
             var difference = Math.abs(item.angle - angle);
             if (difference < _that.hightlightRange) {
-                item.classList.add(_options.activeCls);
+                item.classList.add(activeCls);
             } else if (difference < _that.visibleRange) {
-                item.classList.add(_options.visibleCls);
-                item.classList.remove(_options.activeCls);
+                item.classList.add(visibleCls);
+                item.classList.remove(activeCls);
             } else {
-                item.classList.remove(_options.activeCls);
-                item.classList.remove(_options.visibleCls);
+                item.classList.remove(activeCls);
+                item.classList.remove(visibleCls);
             }
         });
     };
+    /**
+     * 设置轮的旋转角度
+     *
+     * @param {Number} angle 角度
+     */
     Wheel.prototype._setAngle = function (angle) {
         var _that = this;
         var _options = _that._options;
@@ -422,6 +434,8 @@ function coreModule(Wheel) {
      */
     Wheel.prototype.getSelectedIndex = function () {
         var _that = this;
+        var _options = _that._options;
+
         var index = parseInt((_that._angle / _that.itemAngle).toFixed(0));
         if (_that._elItems && index > _that._elItems.length - 1) {
             index = _that._elItems.length - 1;
@@ -429,7 +443,7 @@ function coreModule(Wheel) {
         if (index < 0) {
             index = 0;
         }
-        return Math.abs(index) || 0;
+        return Math.abs(index) || _options && parseInt(_options.selectedIndex + '', 10) || 0;
     };
     /**
      * 转到指定的索引
@@ -687,7 +701,10 @@ var DEFAULT_OPTIONS = {
     wheelItemEl: '', // 滚轮列表项（wheelEl的子元素）:元素列表、元素标签名称、class名称或空（空的时候取子元素列表）
     activeCls: 'active', // 活动项的Class名
     visibleCls: 'visible', // 显示项的Class名
-    perspective: '1000px' // 视角
+    perspective: '1000px', // 视角
+    blurWidth: 20, // 留边的距离
+    itemHeight: 0, // 列表项高度（0为自动）
+    selectedIndex: 0 // 默认选中项
 };
 
 var platform = navigator.platform.toLowerCase();
@@ -701,45 +718,82 @@ var isIos = (userAgent.indexOf('iphone') > -1 || userAgent.indexOf('ipad') > -1 
  * @param {Function} Wheel 构造函数
  */
 function initModule(Wheel) {
-    Wheel.prototype.refresh = function () {
-        var _that = this;
-        var index = _that.getSelectedIndex();
-        _that._resetItems();
-        _that.height = _that._el.offsetHeight;
-        _that.r = _that.height / 2 - BLUR_WIDTH;
-        _that.d = _that.r * 2;
-        _that.itemHeight = _that._elItems.length > 0 ? _that._elItems[0].offsetHeight : DEFAULT_ITEM_HEIGHT;
-        _that.itemAngle = parseInt(_that._calcAngle(_that.itemHeight * 0.8));
-        _that.hightlightRange = _that.itemAngle / 2;
-        _that.visibleRange = VISIBLE_RANGE;
-        _that.beginAngle = 0;
-        _that.beginExceed = _that.beginAngle - MAX_EXCEED;
-        _that._angle = _that.beginAngle;
-        if (isIos) {
-            _that._wheelEl.style[prefixStyle('transformOrigin')] = 'center center ' + _that.r + 'px';
-        }
-        _that._calcElementItemPostion(true);
-        _that.wheelTo(index);
-    };
+        /**
+         * 刷新
+         *
+         */
+        Wheel.prototype.refresh = function () {
+                var _that = this;
+                var _options = _that._options;
+                var _elItems = _that._elItems;
+                var index = _that.getSelectedIndex();
+                _that._resetItems();
 
-    /**
-     * 初始化
-     *
-     * @param {HTMLElement} el 元素节点
-     * @param {Object} options 选项
-     */
-    Wheel.prototype._init = function (el, options) {
-        var _that = this;
-        _that._initOptions(options);
-        _that._initEl(el);
-        _that.refresh();
-    };
+                // 轮的高度
+                _that.height = _that._el.offsetHeight;
 
-    Wheel.prototype._initOptions = function (options) {
-        var _that = this;
-        _that._options = extend({}, DEFAULT_OPTIONS, options);
-        return _that._options;
-    };
+                // 半径
+                _that.r = _that.height / 2 - _options.blurWidth;
+
+                // 直径
+                _that.d = _that.r * 2;
+
+                // 列表项的高度
+                _that.itemHeight = _options.itemHeight || (_elItems && _elItems.length > 0 ? _elItems[0].offsetHeight : DEFAULT_ITEM_HEIGHT);
+
+                // 每项旋转的角度
+                _that.itemAngle = parseInt(_that._calcAngle(_that.itemHeight * 0.8));
+
+                // 高亮项的角度
+                _that.hightlightRange = _that.itemAngle / 2;
+
+                // 可视角度
+                _that.visibleRange = VISIBLE_RANGE;
+
+                // 轮的开始角度
+                _that.beginAngle = 0;
+
+                // 超过的角度
+                _that.beginExceed = _that.beginAngle - MAX_EXCEED;
+
+                // 轮当前的角度
+                _that._angle = _that.beginAngle;
+
+                if (isIos) {
+                        // ios设置旋转的中心轴
+                        _that._wheelEl.style[prefixStyle('transformOrigin')] = 'center center ' + _that.r + 'px';
+                }
+
+                _that._calcElementItemPostion(true);
+
+                // 设置默认项
+                index > 0 && _that.wheelTo(index);
+        };
+
+        /**
+         * 初始化
+         *
+         * @param {HTMLElement} el 元素节点
+         * @param {Object} options 选项
+         */
+        Wheel.prototype._init = function (el, options) {
+                var _that = this;
+                _that._initOptions(options);
+                _that._initEl(el);
+                _that.refresh();
+                // _options.selectedIndex > 0 && _that.wheelTo(_options.selectedIndex);
+        };
+        /**
+         * 初始化选项
+         *
+         * @param {Object} options 选项
+         * @returns {Object}
+         */
+        Wheel.prototype._initOptions = function (options) {
+                var _that = this;
+                _that._options = extend({}, DEFAULT_OPTIONS, options);
+                return _that._options;
+        };
 }
 
 // import { easing } from './utils/easing';
