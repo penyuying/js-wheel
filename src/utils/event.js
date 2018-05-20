@@ -1,3 +1,4 @@
+import { extend } from './utils';
 /**
  * 自定义事件处理模块
  *
@@ -5,6 +6,15 @@
  * @param {Function} Fn 构造函数
  */
 export function eventModule(Fn) {
+    Fn.prototype.dispatchEvent = function (target, eventType, options) {
+        if (target && target.tagName && eventType && typeof eventType === 'string') {
+            let ev = document.createEvent(window && window.MouseEvent ? 'MouseEvents' : 'Event');
+            ev.initEvent(eventType, true, false);
+            ev._constructed = true;
+            ev = extend(ev, options);
+            target.dispatchEvent(ev);
+        }
+    };
     Fn.prototype.on = function (type, fn, context = this) {
         let _that = this;
         _that._events = _that._events || {};

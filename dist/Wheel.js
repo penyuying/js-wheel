@@ -1,6 +1,6 @@
 /*!
  * js-wheel v1.0.0
- * (c) 2017-2017 penyuying
+ * (c) 2017-2018 penyuying
  * Released under the MIT License.
  */
 (function (global, factory) {
@@ -17,6 +17,53 @@
  */
 function warn(msg) {
   console.error("[Wheel warn]: " + msg);
+}
+
+/**
+ * 获取当前时间
+ *
+ * @export
+ * @returns {Number} 时间戳
+ */
+
+
+/**
+ * 拷贝对象
+ *
+ * @export
+ * @param {Object} target 默认对象
+ * @param {Object} rest 被拷贝的对象
+ * @returns {Object} target
+ */
+function extend(target) {
+    var isDeep = true;
+    var n = 0;
+
+    for (var _len = arguments.length, rest = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        rest[_key - 1] = arguments[_key];
+    }
+
+    if (rest && rest.length < 1) {
+        return typeof target === 'boolean' ? {} : target;
+    }
+    if (typeof target === 'boolean') {
+        isDeep = target;
+        target = rest[0];
+        n = 1;
+    }
+    for (var i = 0 + n; i < rest.length; i++) {
+        var source = rest[i];
+        if (source instanceof Object) {
+            for (var key in source) {
+                if (isDeep && source[key] instanceof Object) {
+                    target[key] = extend(source[key] instanceof Array ? [] : {}, source[key]);
+                } else {
+                    target[key] = source[key];
+                }
+            }
+        }
+    }
+    return target;
 }
 
 var slicedToArray = function () {
@@ -86,6 +133,15 @@ var toConsumableArray = function (arr) {
  * @param {Function} Fn 构造函数
  */
 function eventModule(Fn) {
+    Fn.prototype.dispatchEvent = function (target, eventType, options) {
+        if (target && target.tagName && eventType && typeof eventType === 'string') {
+            var ev = document.createEvent(window && window.MouseEvent ? 'MouseEvents' : 'Event');
+            ev.initEvent(eventType, true, false);
+            ev._constructed = true;
+            ev = extend(ev, options);
+            target.dispatchEvent(ev);
+        }
+    };
     Fn.prototype.on = function (type, fn) {
         var context = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this;
 
@@ -441,8 +497,12 @@ function coreModule(Wheel) {
                     _that._endScroll(callback);
                     return;
                 }
+                var index = _that.getSelectedIndex();
+                _that.dispatchEvent(_that._el, 'scroll', {
+                    index: index
+                });
                 _that.trigger('scroll', {
-                    index: _that.getSelectedIndex()
+                    index: index
                 });
                 setTimeout(inertiaMove, frameInterval);
             })();
@@ -479,8 +539,11 @@ function coreModule(Wheel) {
             var index = _that.getSelectedIndex();
             // let item = _that.items[index];
             if (_that.trigger && (index != _that.lastIndex || force === true)) {
+                _that.dispatchEvent(_that._el, 'scrollEnd', {
+                    index: index
+                });
                 _that.trigger('scrollEnd', {
-                    'index': index
+                    index: index
                 });
             }
             _that.lastIndex = index;
@@ -566,8 +629,12 @@ function coreModule(Wheel) {
         _el.addEventListener(EVENT_TYPE.EVENT_START, function (event) {
             isPicking = true;
             event.preventDefault();
+            var index = _that.getSelectedIndex();
+            _that.dispatchEvent(_that._el, 'scrollEnd', {
+                index: index
+            });
             _that.trigger('scrollStart', {
-                index: _that.getSelectedIndex()
+                index: index
             });
             _that._wheelEl.style[prefixStyle('transition')] = '';
             startY = (event.changedTouches ? event.changedTouches[0] : event).pageY;
@@ -613,42 +680,6 @@ function coreModule(Wheel) {
         //     }
         // }, false);
     };
-}
-
-/**
- * 获取当前时间
- *
- * @export
- * @returns {Number} 时间戳
- */
-
-
-/**
- * 拷贝对象
- *
- * @export
- * @param {Object} target 默认对象
- * @param {Object} rest 被拷贝的对象
- * @returns {Object} target
- */
-function extend(target) {
-    for (var _len = arguments.length, rest = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        rest[_key - 1] = arguments[_key];
-    }
-
-    for (var i = 0; i < rest.length; i++) {
-        var source = rest[i];
-        if (source instanceof Object) {
-            for (var key in source) {
-                if (source[key] instanceof Object) {
-                    target[key] = extend(source[key] instanceof Array ? [] : {}, source[key]);
-                } else {
-                    target[key] = source[key];
-                }
-            }
-        }
-    }
-    return target;
 }
 
 var DEFAULT_OPTIONS = {

@@ -123,8 +123,12 @@ export function coreModule(Wheel) {
                     _that._endScroll(callback);
                     return;
                 }
+                let index = _that.getSelectedIndex();
+                _that.dispatchEvent(_that._el, 'scroll', {
+                    index: index
+                });
                 _that.trigger('scroll', {
-                    index: _that.getSelectedIndex()
+                    index: index
                 });
                 setTimeout(inertiaMove, frameInterval);
             })();
@@ -161,8 +165,11 @@ export function coreModule(Wheel) {
             let index = _that.getSelectedIndex();
             // let item = _that.items[index];
             if (_that.trigger && (index != _that.lastIndex || force === true)) {
+                _that.dispatchEvent(_that._el, 'scrollEnd', {
+                    index: index
+                });
                 _that.trigger('scrollEnd', {
-                    'index': index
+                    index: index
                 });
             }
             _that.lastIndex = index;
@@ -247,8 +254,12 @@ export function coreModule(Wheel) {
         _el.addEventListener(EVENT_TYPE.EVENT_START, function (event) {
             isPicking = true;
             event.preventDefault();
+            let index = _that.getSelectedIndex();
+            _that.dispatchEvent(_that._el, 'scrollEnd', {
+                index: index
+            });
             _that.trigger('scrollStart', {
-                index: _that.getSelectedIndex()
+                index: index
             });
             _that._wheelEl.style[prefixStyle('transition')] = '';
             startY = (event.changedTouches ? event.changedTouches[0] : event).pageY;

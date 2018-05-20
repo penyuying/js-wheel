@@ -17,11 +17,21 @@ export function getNow() {
  * @returns {Object} target
  */
 export function extend(target, ...rest) {
-    for (let i = 0; i < rest.length; i++) {
+    let isDeep = true;
+    let n = 0;
+    if (rest && rest.length < 1) {
+        return typeof target === 'boolean' ? {} : target;
+    }
+    if (typeof target === 'boolean') {
+        isDeep = target;
+        target = rest[0];
+        n = 1;
+    }
+    for (let i = (0 + n); i < rest.length; i++) {
         let source = rest[i];
         if (source instanceof Object) {
             for (let key in source) {
-                if (source[key] instanceof Object) {
+                if (isDeep && source[key] instanceof Object) {
                     target[key] = extend((source[key] instanceof Array) ? [] : {}, source[key]);
                 } else {
                     target[key] = source[key];
