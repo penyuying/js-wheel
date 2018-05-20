@@ -266,22 +266,28 @@ function prefixStyle(style) {
  * @param {Function} Wheel 构造函数
  */
 function domModule(Wheel) {
+    Wheel.prototype._resetItems = function () {
+        var _that = this;
+        var _options = _that._options;
+        var _wheelEl = _that._wheelEl;
+        if (_wheelEl) {
+            var _elItems = _that._getElements(_options.wheelItemEl, _wheelEl);
+            if (_elItems && _elItems.length > 0) {
+                _that._elItems = _elItems;
+            } else {
+                warn('can not resolve the wheelItem dom');
+            }
+        } else {
+            warn('can not resolve the wheel dom');
+        }
+    };
     Wheel.prototype._initEl = function (el) {
         var _that = this;
         var _options = _that._options;
         _that._el = el;
         var _wheelEl = _that._wheelEl = _that._getElements(_options.wheelEl, el)[0];
         if (_wheelEl) {
-            var _elItems = _that._getElements(_options.wheelItemEl, _wheelEl);
-            if (_elItems && _elItems.length > 0) {
-                _that._elItems = _elItems;
-                _that.refresh();
-                _that._bindEvent();
-            } else {
-                warn('can not resolve the wheelItem dom');
-            }
-        } else {
-            warn('can not resolve the wheel dom');
+            _that._bindEvent();
         }
     };
     /**
@@ -393,13 +399,13 @@ function coreModule(Wheel) {
     Wheel.prototype.getSelectedIndex = function () {
         var _that = this;
         var index = parseInt((_that._angle / _that.itemAngle).toFixed(0));
-        if (index > _that._elItems.length - 1) {
+        if (_that._elItems && index > _that._elItems.length - 1) {
             index = _that._elItems.length - 1;
         }
         if (index < 0) {
             index = 0;
         }
-        return Math.abs(index);
+        return Math.abs(index) || 0;
     };
     /**
      * 转到指定的索引
@@ -441,7 +447,7 @@ function coreModule(Wheel) {
      *
      * @param {any} event 事件对象
      */
-    Wheel.prototype._startInertiaScroll = function (event) {
+    Wheel.prototype._startScroll = function (event) {
         var _that = this;
         var point = event.changedTouches ? event.changedTouches[0] : event;
         /**
@@ -644,12 +650,12 @@ function coreModule(Wheel) {
         _el.addEventListener(EVENT_TYPE.EVENT_END, function (event) {
             isPicking = false;
             event.preventDefault();
-            _that._startInertiaScroll(event);
+            _that._startScroll(event);
         }, false);
         _el.addEventListener(EVENT_TYPE.EVENT_CANCEL, function (event) {
             isPicking = false;
             event.preventDefault();
-            _that._startInertiaScroll(event);
+            _that._startScroll(event);
         }, false);
         _el.addEventListener(EVENT_TYPE.EVENT_MOVE, function (event) {
             if (!isPicking) {
@@ -672,13 +678,6 @@ function coreModule(Wheel) {
                 index: _that.getSelectedIndex()
             });
         }, false);
-
-        // _that._wheelEl.addEventListener('tap', function (event) {
-        //     let elementItem = event.target;
-        //     if (elementItem.tagName == 'LI') {
-        //         _that.setSelectedIndex(_that.elementItems.indexOf(elementItem), 200);
-        //     }
-        // }, false);
     };
 }
 
@@ -703,6 +702,8 @@ var isIos = (userAgent.indexOf('iphone') > -1 || userAgent.indexOf('ipad') > -1 
 function initModule(Wheel) {
     Wheel.prototype.refresh = function () {
         var _that = this;
+        var index = _that.getSelectedIndex();
+        _that._resetItems();
         _that.height = _that._el.offsetHeight;
         _that.r = _that.height / 2 - BLUR_WIDTH;
         _that.d = _that.r * 2;
@@ -717,6 +718,7 @@ function initModule(Wheel) {
             _that._wheelEl.style[prefixStyle('transformOrigin')] = 'center center ' + _that.r + 'px';
         }
         _that._calcElementItemPostion(true);
+        _that.wheelTo(index);
     };
 
     /**

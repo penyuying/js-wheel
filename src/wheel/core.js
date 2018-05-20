@@ -19,13 +19,13 @@ export function coreModule(Wheel) {
     Wheel.prototype.getSelectedIndex = function () {
         let _that = this;
         let index = parseInt((_that._angle / _that.itemAngle).toFixed(0));
-        if (index > _that._elItems.length - 1) {
+        if (_that._elItems && index > _that._elItems.length - 1) {
             index = _that._elItems.length - 1;
         }
         if (index < 0) {
             index = 0;
         }
-        return Math.abs(index);
+        return Math.abs(index) || 0;
     };
     /**
      * 转到指定的索引
@@ -67,7 +67,7 @@ export function coreModule(Wheel) {
      *
      * @param {any} event 事件对象
      */
-    Wheel.prototype._startInertiaScroll = function (event) {
+    Wheel.prototype._startScroll = function (event) {
         let _that = this;
         let point = event.changedTouches ? event.changedTouches[0] : event;
         /**
@@ -269,12 +269,12 @@ export function coreModule(Wheel) {
         _el.addEventListener(EVENT_TYPE.EVENT_END, function (event) {
             isPicking = false;
             event.preventDefault();
-            _that._startInertiaScroll(event);
+            _that._startScroll(event);
         }, false);
         _el.addEventListener(EVENT_TYPE.EVENT_CANCEL, function (event) {
             isPicking = false;
             event.preventDefault();
-            _that._startInertiaScroll(event);
+            _that._startScroll(event);
         }, false);
         _el.addEventListener(EVENT_TYPE.EVENT_MOVE, function (event) {
             if (!isPicking) {
@@ -297,12 +297,5 @@ export function coreModule(Wheel) {
                 index: _that.getSelectedIndex()
             });
         }, false);
-
-        // _that._wheelEl.addEventListener('tap', function (event) {
-        //     let elementItem = event.target;
-        //     if (elementItem.tagName == 'LI') {
-        //         _that.setSelectedIndex(_that.elementItems.indexOf(elementItem), 200);
-        //     }
-        // }, false);
     };
 }

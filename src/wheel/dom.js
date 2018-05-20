@@ -9,22 +9,28 @@ import { prefixStyle } from '../utils/prefixStyle';
  * @param {Function} Wheel 构造函数
  */
 export function domModule(Wheel) {
+    Wheel.prototype._resetItems = function() {
+        let _that = this;
+        let _options = _that._options;
+        let _wheelEl = _that._wheelEl;
+        if (_wheelEl) {
+            let _elItems = _that._getElements(_options.wheelItemEl, _wheelEl);
+            if (_elItems && _elItems.length > 0) {
+                _that._elItems = _elItems;
+            } else {
+                warn('can not resolve the wheelItem dom');
+            }
+        } else {
+            warn('can not resolve the wheel dom');
+        }
+    };
     Wheel.prototype._initEl = function (el) {
         let _that = this;
         let _options = _that._options;
         _that._el = el;
         let _wheelEl = _that._wheelEl = _that._getElements(_options.wheelEl, el)[0];
         if (_wheelEl) {
-            let _elItems = _that._getElements(_options.wheelItemEl, _wheelEl);
-            if (_elItems && _elItems.length > 0) {
-                _that._elItems = _elItems;
-                _that.refresh();
-                _that._bindEvent();
-            } else {
-                warn('can not resolve the wheelItem dom');
-            }
-        } else {
-            warn('can not resolve the wheel dom');
+            _that._bindEvent();
         }
     };
     /**

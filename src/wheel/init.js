@@ -17,6 +17,8 @@ import { prefixStyle } from '../utils/prefixStyle';
 export function initModule(Wheel) {
     Wheel.prototype.refresh = function () {
         let _that = this;
+        let index = _that.getSelectedIndex();
+        _that._resetItems();
         _that.height = _that._el.offsetHeight;
         _that.r = _that.height / 2 - BLUR_WIDTH;
         _that.d = _that.r * 2;
@@ -31,6 +33,7 @@ export function initModule(Wheel) {
             _that._wheelEl.style[prefixStyle('transformOrigin')] = 'center center ' + _that.r + 'px';
         }
         _that._calcElementItemPostion(true);
+        _that.wheelTo(index);
     };
 
     /**

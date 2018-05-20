@@ -7,6 +7,22 @@
     <title>Wheel demo</title>
     <script src="../dist/Wheel.js"></script>
     <script>
+        function createNode(html, data) {
+            let _cloneItem = document.createDocumentFragment();
+            let _divDom = document.createElement('div');
+
+            _cloneItem.appendChild(_divDom);
+            // html = iReplaceHtmlData(html, data);
+            _divDom.innerHTML = html;
+            let _divDomChilds = _divDom.childNodes || [];
+
+            for (let i = 0; i < _divDomChilds.length; i++) {
+                _cloneItem.appendChild(_divDomChilds[i]);
+            }
+            _cloneItem.removeChild(_divDom);
+
+            return _cloneItem;
+        }
         window.onload = function() {
             var wheel = new Wheel.Wheel('.wheel-wrap', {
                 wheelEl: '.wheel',
@@ -33,6 +49,14 @@
             })
 
             wheel.wheelTo(5, 200);
+
+            setTimeout(() => {
+                let wheelEl = document.querySelector('.wheel');
+                wheelEl.appendChild(createNode('<li class="wheel-item">21xxxxxxxx</li>'));
+                wheelEl.appendChild(createNode('<li class="wheel-item">21xxxxxxxx</li>'));
+                wheelEl.appendChild(createNode('<li class="wheel-item">21xxxxxxxx</li>'));
+                wheel.refresh();
+            }, 5000);
         }
     </script>
     <style>
