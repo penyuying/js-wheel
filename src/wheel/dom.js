@@ -1,5 +1,5 @@
 
-import { warn } from '../utils/debug';
+// import { warn } from '../utils/debug';
 import { MAX_EXCEED } from './constant';
 import { prefixStyle } from '../utils/prefixStyle';
 /**
@@ -21,12 +21,14 @@ export function domModule(Wheel) {
             let _elItems = _that._getElements(_options.wheelItemEl, _wheelEl);
             if (_elItems && _elItems.length > 0) {
                 _that._elItems = _elItems;
-            } else {
-                warn('can not resolve the wheelItem dom');
             }
-        } else {
-            warn('can not resolve the wheel dom');
+            // } else {
+            //     warn('can not resolve the wheelItem dom');
+            // }
         }
+        // } else {
+        //     warn('can not resolve the wheel dom');
+        // }
     };
     /**
      * 初始化轮元素
@@ -52,7 +54,11 @@ export function domModule(Wheel) {
     Wheel.prototype._getElements = function(el, pEl = document) {
         let _el;
         if (el) {
-            _el = typeof el === 'string' ? pEl.querySelectorAll(el) : el;
+            if (typeof el === 'string') {
+                _el = pEl.querySelectorAll(el);
+            } else if (typeof el.length !== 'number') {
+                _el = [el];
+            }
         } else if (pEl && pEl !== document && pEl.children && pEl.children.length > 0) {
             _el = pEl.children;
         }

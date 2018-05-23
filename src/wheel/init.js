@@ -23,7 +23,7 @@ export function initModule(Wheel) {
         let _that = this;
         let _options = _that._options;
         let _elItems = _that._elItems;
-        let index = _that.getSelectedIndex();
+        let index = _that.index;
         _that._resetItems();
 
         // 轮的高度
@@ -74,10 +74,11 @@ export function initModule(Wheel) {
      */
     Wheel.prototype._init = function (el, options) {
         let _that = this;
-        _that._initOptions(options);
+        let _options = _that._initOptions(options);
         _that._initEl(el);
         _that.refresh();
-        // _options.selectedIndex > 0 && _that.wheelTo(_options.selectedIndex);
+        _that.index = _options.selectedIndex || 0;
+        _that.index > 0 && _that.wheelTo(_that.index);
     };
     /**
      * 初始化选项
