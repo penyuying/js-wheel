@@ -1,6 +1,6 @@
 {
   "name": "js-wheel",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "picker轮的滚轮",
   "main": "./dist/wheel.min.js",
   "scripts": {

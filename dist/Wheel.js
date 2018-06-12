@@ -1,5 +1,5 @@
 /*!
- * js-wheel v1.0.3
+ * js-wheel v1.0.4
  * (c) 2017-2018 penyuying
  * Released under the MIT License.
  */
@@ -336,11 +336,13 @@ function domModule(Wheel) {
     Wheel.prototype._calcElementItemPostion = function () {
         var _that = this;
         _that._elItems.forEach(function (item, index) {
-            _that.endAngle = _that.itemAngle * index;
-            item._index = index;
-            item.angle = _that.endAngle;
-            item.style[prefixStyle('transformOrigin')] = 'center center -' + _that.r + 'px';
-            item.style[prefixStyle('transform')] = 'translateZ(' + _that.r + 'px) rotateX(' + -_that.endAngle + 'deg)';
+            if (item._index !== index) {
+                _that.endAngle = _that.itemAngle * index;
+                item._index = index;
+                item.angle = _that.endAngle;
+                item.style[prefixStyle('transformOrigin')] = 'center center -' + _that.r + 'px';
+                item.style[prefixStyle('transform')] = 'translateZ(' + _that.r + 'px) rotateX(' + -_that.endAngle + 'deg)';
+            }
         });
         _that.endExceed = _that.endAngle + MAX_EXCEED;
         _that._setItemVisibility(_that.beginAngle);
