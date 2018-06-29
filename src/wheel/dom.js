@@ -77,13 +77,11 @@ export function domModule(Wheel) {
     Wheel.prototype._calcElementItemPostion = function () {
         let _that = this;
         _that._elItems.forEach(function (item, index) {
-            if (item._index !== index) {
-                _that.endAngle = _that.itemAngle * index;
-                item._index = index;
-                item.angle = _that.endAngle;
-                item.style[prefixStyle('transformOrigin')] = 'center center -' + _that.r + 'px';
-                item.style[prefixStyle('transform')] = 'translateZ(' + _that.r + 'px) rotateX(' + (-_that.endAngle) + 'deg)';
-            }
+            _that.endAngle = _that.itemAngle * index;
+            item._index = index;
+            item.angle = _that.endAngle;
+            item.style[prefixStyle('transformOrigin')] = 'center center -' + _that.r + 'px';
+            item.style[prefixStyle('transform')] = 'translateZ(' + _that.r + 'px) rotateX(' + (-_that.endAngle) + 'deg)';
         });
         _that.endExceed = _that.endAngle + MAX_EXCEED;
         _that._setItemVisibility(_that.beginAngle);
