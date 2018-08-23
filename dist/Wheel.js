@@ -1,5 +1,5 @@
 /*!
- * js-wheel v1.0.2
+ * js-wheel v1.0.7
  * (c) 2017-2018 penyuying
  * Released under the MIT License.
  */
@@ -258,6 +258,7 @@ function prefixStyle(style) {
   return vendor + style.charAt(0).toUpperCase() + style.substr(1);
 }
 
+// import { warn } from '../utils/debug';
 /**
  * 初始化模块
  *
@@ -277,12 +278,14 @@ function domModule(Wheel) {
             var _elItems = _that._getElements(_options.wheelItemEl, _wheelEl);
             if (_elItems && _elItems.length > 0) {
                 _that._elItems = _elItems;
-            } else {
-                warn('can not resolve the wheelItem dom');
             }
-        } else {
-            warn('can not resolve the wheel dom');
+            // } else {
+            //     warn('can not resolve the wheelItem dom');
+            // }
         }
+        // } else {
+        //     warn('can not resolve the wheel dom');
+        // }
     };
     /**
      * 初始化轮元素
@@ -466,7 +469,7 @@ function coreModule(Wheel) {
      */
     Wheel.prototype.getSelectedIndex = function () {
         var _that = this;
-        var _options = _that._options;
+        // let _options = _that._options;
 
         var index = parseInt((_that._angle / _that.itemAngle).toFixed(0));
         if (_that._elItems && index > _that._elItems.length - 1) {
@@ -475,7 +478,8 @@ function coreModule(Wheel) {
         if (index < 0) {
             index = 0;
         }
-        return Math.abs(index) || _options && parseInt(_options.selectedIndex + '', 10) || 0;
+        _that.index = Math.abs(index) || 0;
+        return _that.index;
     };
     /**
      * 转到指定的索引
@@ -764,7 +768,7 @@ function initModule(Wheel) {
                 var _that = this;
                 var _options = _that._options;
                 var _elItems = _that._elItems;
-                var index = _that.getSelectedIndex();
+                var index = _that.index;
                 _that._resetItems();
 
                 // 轮的高度
@@ -816,10 +820,11 @@ function initModule(Wheel) {
          */
         Wheel.prototype._init = function (el, options) {
                 var _that = this;
-                _that._initOptions(options);
+                var _options = _that._initOptions(options);
                 _that._initEl(el);
                 _that.refresh();
-                // _options.selectedIndex > 0 && _that.wheelTo(_options.selectedIndex);
+                _that.index = _options.selectedIndex || 0;
+                _that.index > 0 && _that.wheelTo(_that.index);
         };
         /**
          * 初始化选项
@@ -871,7 +876,7 @@ Wheel.use(domModule);
 Wheel.use(coreModule);
 Wheel.use(initModule);
 
-Wheel.Version = '1.0.2';
+Wheel.Version = '1.0.7';
 
 exports['default'] = Wheel;
 exports.Wheel = Wheel;

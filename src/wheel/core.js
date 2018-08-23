@@ -18,7 +18,7 @@ export function coreModule(Wheel) {
      */
     Wheel.prototype.getSelectedIndex = function () {
         let _that = this;
-        let _options = _that._options;
+        // let _options = _that._options;
 
         let index = parseInt((_that._angle / _that.itemAngle).toFixed(0));
         if (_that._elItems && index > _that._elItems.length - 1) {
@@ -27,7 +27,8 @@ export function coreModule(Wheel) {
         if (index < 0) {
             index = 0;
         }
-        return Math.abs(index) || (_options && parseInt(_options.selectedIndex + '', 10)) || 0;
+        _that.index = Math.abs(index) || 0;
+        return _that.index;
     };
     /**
      * 转到指定的索引
