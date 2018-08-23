@@ -229,6 +229,7 @@ export function coreModule(Wheel) {
         let _el = _that._el;
         let lastAngle = 0;
         let startY = null;
+        let gendY = null;
         let isPicking = false;
         _el.addEventListener(EVENT_TYPE.EVENT_START, function (event) {
             isPicking = true;
@@ -242,12 +243,16 @@ export function coreModule(Wheel) {
             });
             _that._wheelEl.style[prefixStyle('transition')] = '';
             startY = (event.changedTouches ? event.changedTouches[0] : event).pageY;
+            gendY = startY;
             lastAngle = _that._angle;
             _that._updateInertiaParams(event, true);
         }, false);
         _el.addEventListener(EVENT_TYPE.EVENT_END, function (event) {
             isPicking = false;
             event.preventDefault();
+            if (Math.abs(startY - gendY) < 10) {
+                _that._triggerEnd(true);
+            }
             _that._startScroll(event);
         }, false);
         _el.addEventListener(EVENT_TYPE.EVENT_CANCEL, function (event) {
@@ -261,6 +266,7 @@ export function coreModule(Wheel) {
             }
             event.preventDefault();
             let endY = (event.changedTouches ? event.changedTouches[0] : event).pageY;
+            gendY = endY;
             let dragRange = endY - startY;
             let dragAngle = _that._calcAngle(dragRange);
             let newAngle = dragRange > 0 ? lastAngle - dragAngle : lastAngle + dragAngle;

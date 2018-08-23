@@ -52,7 +52,11 @@ export function domModule(Wheel) {
     Wheel.prototype._getElements = function(el, pEl = document) {
         let _el;
         if (el) {
-            _el = typeof el === 'string' ? pEl.querySelectorAll(el) : el;
+            if (typeof el === 'string') {
+                _el = pEl.querySelectorAll(el);
+            } else if (typeof el.length !== 'number') {
+                _el = [el];
+            }
         } else if (pEl && pEl !== document && pEl.children && pEl.children.length > 0) {
             _el = pEl.children;
         }
@@ -70,13 +74,25 @@ export function domModule(Wheel) {
      */
     Wheel.prototype._calcElementItemPostion = function () {
         let _that = this;
-        _that._elItems.forEach(function (item, index) {
-            _that.endAngle = _that.itemAngle * index;
-            item._index = index;
-            item.angle = _that.endAngle;
-            item.style[prefixStyle('transformOrigin')] = 'center center -' + _that.r + 'px';
-            item.style[prefixStyle('transform')] = 'translateZ(' + _that.r + 'px) rotateX(' + (-_that.endAngle) + 'deg)';
-        });
+        let _elItems = _that._elItems;
+        if (_elItems && _elItems.length > 0) {
+            for (let index = 0; index < _elItems.length; index++) {
+                const item = _elItems[index];
+                _that.endAngle = _that.itemAngle * index;
+                item._index = index;
+                item.angle = _that.endAngle;
+                item.style[prefixStyle('transformOrigin')] = 'center center -' + _that.r + 'px';
+                item.style[prefixStyle('transform')] = 'translateZ(' + _that.r + 'px) rotateX(' + (-_that.endAngle) + 'deg)';
+            }
+        }
+        // _that._elItems.forEach(function (item, index) {
+        //     _that.endAngle = _that.itemAngle * index;
+        //     item._index = index;
+        //     item.angle = _that.endAngle;
+        //     item.style[prefixStyle('transformOrigin')] = 'center center -' + _that.r + 'px';
+        //     item.style[prefixStyle('transform')] = 'translateZ(' + _that.r + 'px) rotateX(' + (-_that.endAngle) + 'deg)';
+        // });
+
         _that.endExceed = _that.endAngle + MAX_EXCEED;
         _that._setItemVisibility(_that.beginAngle);
     };
@@ -88,21 +104,37 @@ export function domModule(Wheel) {
      */
     Wheel.prototype._setItemVisibility = function (angle) {
         let _that = this;
+        let _elItems = _that._elItems;
         let _options = _that._options;
         let activeCls = _options.activeCls;
         let visibleCls = _options.visibleCls;
-        _that._elItems.forEach(function (item) {
-            let difference = Math.abs(item.angle - angle);
-            if (difference < _that.hightlightRange) {
-                item.classList.add(activeCls);
-            } else if (difference < _that.visibleRange) {
-                item.classList.add(visibleCls);
-                item.classList.remove(activeCls);
-            } else {
-                item.classList.remove(activeCls);
-                item.classList.remove(visibleCls);
+        if (_elItems && _elItems.length > 0) {
+            for (let index = 0; index < _elItems.length; index++) {
+                const item = _elItems[index];
+                let difference = Math.abs(item.angle - angle);
+                if (difference < _that.hightlightRange) {
+                    item.classList.add(activeCls);
+                } else if (difference < _that.visibleRange) {
+                    item.classList.add(visibleCls);
+                    item.classList.remove(activeCls);
+                } else {
+                    item.classList.remove(activeCls);
+                    item.classList.remove(visibleCls);
+                }
             }
-        });
+        }
+        // _that._elItems.forEach(function (item) {
+        //     let difference = Math.abs(item.angle - angle);
+        //     if (difference < _that.hightlightRange) {
+        //         item.classList.add(activeCls);
+        //     } else if (difference < _that.visibleRange) {
+        //         item.classList.add(visibleCls);
+        //         item.classList.remove(activeCls);
+        //     } else {
+        //         item.classList.remove(activeCls);
+        //         item.classList.remove(visibleCls);
+        //     }
+        // });
     };
     /**
      * 设置轮的旋转角度

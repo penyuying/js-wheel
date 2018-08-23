@@ -1,5 +1,5 @@
 /*!
- * js-wheel v1.0.0
+ * js-wheel v1.0.2
  * (c) 2017-2018 penyuying
  * Released under the MIT License.
  */
@@ -310,7 +310,11 @@ function domModule(Wheel) {
 
         var _el = void 0;
         if (el) {
-            _el = typeof el === 'string' ? pEl.querySelectorAll(el) : el;
+            if (typeof el === 'string') {
+                _el = pEl.querySelectorAll(el);
+            } else if (typeof el.length !== 'number') {
+                _el = [el];
+            }
         } else if (pEl && pEl !== document && pEl.children && pEl.children.length > 0) {
             _el = pEl.children;
         }
@@ -328,13 +332,25 @@ function domModule(Wheel) {
      */
     Wheel.prototype._calcElementItemPostion = function () {
         var _that = this;
-        _that._elItems.forEach(function (item, index) {
-            _that.endAngle = _that.itemAngle * index;
-            item._index = index;
-            item.angle = _that.endAngle;
-            item.style[prefixStyle('transformOrigin')] = 'center center -' + _that.r + 'px';
-            item.style[prefixStyle('transform')] = 'translateZ(' + _that.r + 'px) rotateX(' + -_that.endAngle + 'deg)';
-        });
+        var _elItems = _that._elItems;
+        if (_elItems && _elItems.length > 0) {
+            for (var index = 0; index < _elItems.length; index++) {
+                var item = _elItems[index];
+                _that.endAngle = _that.itemAngle * index;
+                item._index = index;
+                item.angle = _that.endAngle;
+                item.style[prefixStyle('transformOrigin')] = 'center center -' + _that.r + 'px';
+                item.style[prefixStyle('transform')] = 'translateZ(' + _that.r + 'px) rotateX(' + -_that.endAngle + 'deg)';
+            }
+        }
+        // _that._elItems.forEach(function (item, index) {
+        //     _that.endAngle = _that.itemAngle * index;
+        //     item._index = index;
+        //     item.angle = _that.endAngle;
+        //     item.style[prefixStyle('transformOrigin')] = 'center center -' + _that.r + 'px';
+        //     item.style[prefixStyle('transform')] = 'translateZ(' + _that.r + 'px) rotateX(' + (-_that.endAngle) + 'deg)';
+        // });
+
         _that.endExceed = _that.endAngle + MAX_EXCEED;
         _that._setItemVisibility(_that.beginAngle);
     };
@@ -346,21 +362,37 @@ function domModule(Wheel) {
      */
     Wheel.prototype._setItemVisibility = function (angle) {
         var _that = this;
+        var _elItems = _that._elItems;
         var _options = _that._options;
         var activeCls = _options.activeCls;
         var visibleCls = _options.visibleCls;
-        _that._elItems.forEach(function (item) {
-            var difference = Math.abs(item.angle - angle);
-            if (difference < _that.hightlightRange) {
-                item.classList.add(activeCls);
-            } else if (difference < _that.visibleRange) {
-                item.classList.add(visibleCls);
-                item.classList.remove(activeCls);
-            } else {
-                item.classList.remove(activeCls);
-                item.classList.remove(visibleCls);
+        if (_elItems && _elItems.length > 0) {
+            for (var index = 0; index < _elItems.length; index++) {
+                var item = _elItems[index];
+                var difference = Math.abs(item.angle - angle);
+                if (difference < _that.hightlightRange) {
+                    item.classList.add(activeCls);
+                } else if (difference < _that.visibleRange) {
+                    item.classList.add(visibleCls);
+                    item.classList.remove(activeCls);
+                } else {
+                    item.classList.remove(activeCls);
+                    item.classList.remove(visibleCls);
+                }
             }
-        });
+        }
+        // _that._elItems.forEach(function (item) {
+        //     let difference = Math.abs(item.angle - angle);
+        //     if (difference < _that.hightlightRange) {
+        //         item.classList.add(activeCls);
+        //     } else if (difference < _that.visibleRange) {
+        //         item.classList.add(visibleCls);
+        //         item.classList.remove(activeCls);
+        //     } else {
+        //         item.classList.remove(activeCls);
+        //         item.classList.remove(visibleCls);
+        //     }
+        // });
     };
     /**
      * 设置轮的旋转角度
@@ -646,6 +678,7 @@ function coreModule(Wheel) {
         var _el = _that._el;
         var lastAngle = 0;
         var startY = null;
+        var gendY = null;
         var isPicking = false;
         _el.addEventListener(EVENT_TYPE.EVENT_START, function (event) {
             isPicking = true;
@@ -659,12 +692,16 @@ function coreModule(Wheel) {
             });
             _that._wheelEl.style[prefixStyle('transition')] = '';
             startY = (event.changedTouches ? event.changedTouches[0] : event).pageY;
+            gendY = startY;
             lastAngle = _that._angle;
             _that._updateInertiaParams(event, true);
         }, false);
         _el.addEventListener(EVENT_TYPE.EVENT_END, function (event) {
             isPicking = false;
             event.preventDefault();
+            if (Math.abs(startY - gendY) < 10) {
+                _that._triggerEnd(true);
+            }
             _that._startScroll(event);
         }, false);
         _el.addEventListener(EVENT_TYPE.EVENT_CANCEL, function (event) {
@@ -678,6 +715,7 @@ function coreModule(Wheel) {
             }
             event.preventDefault();
             var endY = (event.changedTouches ? event.changedTouches[0] : event).pageY;
+            gendY = endY;
             var dragRange = endY - startY;
             var dragAngle = _that._calcAngle(dragRange);
             var newAngle = dragRange > 0 ? lastAngle - dragAngle : lastAngle + dragAngle;
@@ -833,7 +871,7 @@ Wheel.use(domModule);
 Wheel.use(coreModule);
 Wheel.use(initModule);
 
-Wheel.Version = '1.0.0';
+Wheel.Version = '1.0.2';
 
 exports['default'] = Wheel;
 exports.Wheel = Wheel;

@@ -4,7 +4,6 @@ picker的滚轮
 
 ## Installation
 
-You can use this package on the server side as well as the client side.
 
 ### [DEMO](https://penyuying.github.io/js-wheel/)
 
