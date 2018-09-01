@@ -4,7 +4,8 @@
   "description": "picker轮的滚轮",
   "main": "./dist/wheel.min.js",
   "scripts": {
-    "build": "node build/build.js"
+    "build": "node build/build.js",
+    "server": "node build/server.js"
   },
   "keywords": [
     "wheel",
@@ -38,6 +39,8 @@
     "eslint-plugin-node": "^5.2.1",
     "eslint-plugin-promise": "^3.7.0",
     "eslint-plugin-standard": "^3.0.1",
+    "express": "^4.16.3",
+    "opn": "^5.3.0",
     "rollup": "^0.52.0",
     "rollup-plugin-babel": "^3.0.3",
     "uglify-js": "^3.2.1",

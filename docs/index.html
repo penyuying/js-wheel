@@ -8,15 +8,15 @@
     <script src="dist/Wheel.min.js"></script>
     <script>
         function createNode(html, data) {
-            let _cloneItem = document.createDocumentFragment();
-            let _divDom = document.createElement('div');
+            var _cloneItem = document.createDocumentFragment();
+            var _divDom = document.createElement('div');
 
             _cloneItem.appendChild(_divDom);
             // html = iReplaceHtmlData(html, data);
             _divDom.innerHTML = html;
-            let _divDomChilds = _divDom.childNodes || [];
+            var _divDomChilds = _divDom.childNodes || [];
 
-            for (let i = 0; i < _divDomChilds.length; i++) {
+            for (var i = 0; i < _divDomChilds.length; i++) {
                 _cloneItem.appendChild(_divDomChilds[i]);
             }
             _cloneItem.removeChild(_divDom);
@@ -28,30 +28,30 @@
                 wheelEl: '.wheel',
                 wheelItemEl: '.wheel-item'
             });
-            wheel.on('beforeInit', () => { // 初始化之前
+            wheel.on('beforeInit', function () { // 初始化之前
                 console.log('beforeInit');
             })
 
-            wheel.on('init', () => { // 初始化后
+            wheel.on('init', function () { // 初始化后
                 console.log('init');
             })
 
-            wheel.on('scrollStart', (data) => { // 开始滚动
+            wheel.on('scrollStart', function (data) { // 开始滚动
                 console.log('scrollStart', data);
             })
 
-            wheel.on('scroll', (data) => { // 正在滚动
+            wheel.on('scroll', function (data) { // 正在滚动
                 console.log('scroll', data);
             })
 
-            wheel.on('scrollEnd', (data) => { // 滚动结束后
+            wheel.on('scrollEnd', function (data) { // 滚动结束后
                 console.log('scrollEnd', data);
             })
 
             wheel.wheelTo(5, 200);
 
-            setTimeout(() => {
-                let wheelEl = document.querySelector('.wheel');
+            setTimeout(function () {
+                var wheelEl = document.querySelector('.wheel');
                 wheelEl.appendChild(createNode('<li class="wheel-item">21xxxxxxxx</li>'));
                 wheelEl.appendChild(createNode('<li class="wheel-item">21xxxxxxxx</li>'));
                 wheelEl.appendChild(createNode('<li class="wheel-item">21xxxxxxxx</li>'));
