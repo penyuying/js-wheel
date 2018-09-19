@@ -810,7 +810,6 @@ function initModule(Wheel) {
 
         // 列表项的高度
         _that.itemSize = _options['item' + sizeParam] || (_elItems && _elItems.length > 0 ? _elItems[0]['offset' + sizeParam] : defaultSize);
-        console.log(_that.itemSize);
 
         // 每项旋转的角度
         _that.itemAngle = parseInt(_that._calcAngle(_that.itemSize * 0.8));
