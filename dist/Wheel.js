@@ -1,5 +1,5 @@
 /*!
- * js-wheel v1.0.7
+ * js-wheel v1.0.8
  * (c) 2017-2018 penyuying
  * Released under the MIT License.
  */
@@ -773,98 +773,98 @@ var isIos = (userAgent.indexOf('iphone') > -1 || userAgent.indexOf('ipad') > -1 
  * @param {Function} Wheel 构造函数
  */
 function initModule(Wheel) {
-    /**
-     * 刷新
-     *
-     */
-    Wheel.prototype.refresh = function () {
-        var _that = this;
-        var _options = _that._options;
-        var index = _that.index;
-        var direction = _that._options.direction || 'vertical';
+        /**
+         * 刷新
+         *
+         */
+        Wheel.prototype.refresh = function () {
+                var _that = this;
+                var _options = _that._options;
+                var index = _that.index;
+                var direction = _that._options.direction || 'vertical';
 
-        _that._resetItems();
+                _that._resetItems();
 
-        var _elItems = _that._elItems;
+                var _elItems = _that._elItems;
 
-        // 轮的高度
-        _that.height = _that._el.offsetHeight;
-        _that.width = _that._el.offsetWidth;
+                // 轮的高度
+                _that.height = _that._el.offsetHeight;
+                _that.width = _that._el.offsetWidth;
 
-        var sizeParam = void 0;
-        var defaultSize = void 0;
+                var sizeParam = void 0;
+                var defaultSize = void 0;
 
-        // 半径
-        if (direction == 'horizontal') {
-            _that.r = _that.width / 2 - _options.blurWidth;
-            defaultSize = DEFAULT_ITEM_WIDTH;
-            sizeParam = 'Width';
-        } else if (direction == 'vertical' || !direction) {
-            _that.r = _that.height / 2 - _options.blurWidth;
-            defaultSize = DEFAULT_ITEM_HEIGHT;
-            sizeParam = 'Height';
-        }
+                // 半径
+                if (direction == 'horizontal') {
+                        _that.r = _that.width / 2 - _options.blurWidth;
+                        defaultSize = DEFAULT_ITEM_WIDTH;
+                        sizeParam = 'Width';
+                } else if (direction == 'vertical' || !direction) {
+                        _that.r = _that.height / 2 - _options.blurWidth;
+                        defaultSize = DEFAULT_ITEM_HEIGHT;
+                        sizeParam = 'Height';
+                }
 
-        // 直径
-        _that.d = _that.r * 2;
+                // 直径
+                _that.d = _that.r * 2;
 
-        // 列表项的高度
-        _that.itemSize = _options['item' + sizeParam] || (_elItems && _elItems.length > 0 ? _elItems[0]['offset' + sizeParam] : defaultSize);
+                // 列表项的高度
+                _that.itemSize = _options['item' + sizeParam] || (_elItems && _elItems.length > 0 ? _elItems[0]['offset' + sizeParam] : defaultSize);
 
-        // 每项旋转的角度
-        _that.itemAngle = parseInt(_that._calcAngle(_that.itemSize * 0.8));
+                // 每项旋转的角度
+                _that.itemAngle = parseInt(_that._calcAngle(_that.itemSize * 0.8));
 
-        // 高亮项的角度
-        _that.hightlightRange = _that.itemAngle / 2;
+                // 高亮项的角度
+                _that.hightlightRange = _that.itemAngle / 2;
 
-        // 可视角度
-        _that.visibleRange = VISIBLE_RANGE;
+                // 可视角度
+                _that.visibleRange = VISIBLE_RANGE;
 
-        // 轮的开始角度
-        _that.beginAngle = 0;
+                // 轮的开始角度
+                _that.beginAngle = 0;
 
-        // 超过的角度
-        _that.beginExceed = _that.beginAngle - MAX_EXCEED;
+                // 超过的角度
+                _that.beginExceed = _that.beginAngle - MAX_EXCEED;
 
-        // 轮当前的角度
-        _that._angle = _that.beginAngle;
+                // 轮当前的角度
+                _that._angle = _that.beginAngle;
 
-        if (isIos) {
-            // ios设置旋转的中心轴
-            _that._wheelEl.style[prefixStyle('transformOrigin')] = 'center center ' + _that.r + 'px';
-        }
+                if (isIos) {
+                        // ios设置旋转的中心轴
+                        _that._wheelEl.style[prefixStyle('transformOrigin')] = 'center center ' + _that.r + 'px';
+                }
 
-        _that._calcElementItemPostion(true);
+                _that._calcElementItemPostion(true);
 
-        // 设置默认项
-        index > 0 && _that.wheelTo(index);
-    };
+                // 设置默认项
+                index > 0 && _that.wheelTo(index);
+        };
 
-    /**
-     * 初始化
-     *
-     * @param {HTMLElement} el 元素节点
-     * @param {Object} options 选项
-     */
-    Wheel.prototype._init = function (el, options) {
-        var _that = this;
-        var _options = _that._initOptions(options);
-        _that._initEl(el);
-        _that.refresh();
-        _that.index = _options.selectedIndex || 0;
-        _that.index > 0 && _that.wheelTo(_that.index);
-    };
-    /**
-     * 初始化选项
-     *
-     * @param {Object} options 选项
-     * @returns {Object}
-     */
-    Wheel.prototype._initOptions = function (options) {
-        var _that = this;
-        _that._options = extend({}, DEFAULT_OPTIONS, options);
-        return _that._options;
-    };
+        /**
+         * 初始化
+         *
+         * @param {HTMLElement} el 元素节点
+         * @param {Object} options 选项
+         */
+        Wheel.prototype._init = function (el, options) {
+                var _that = this;
+                var _options = _that._initOptions(options);
+                _that._initEl(el);
+                _that.refresh();
+                _that.index = _options.selectedIndex || 0;
+                _that.index > 0 && _that.wheelTo(_that.index);
+        };
+        /**
+         * 初始化选项
+         *
+         * @param {Object} options 选项
+         * @returns {Object}
+         */
+        Wheel.prototype._initOptions = function (options) {
+                var _that = this;
+                _that._options = extend({}, DEFAULT_OPTIONS, options);
+                return _that._options;
+        };
 }
 
 // import { easing } from './utils/easing';
@@ -904,7 +904,7 @@ Wheel.use(domModule);
 Wheel.use(coreModule);
 Wheel.use(initModule);
 
-Wheel.Version = '1.0.7';
+Wheel.Version = '1.0.8';
 
 exports['default'] = Wheel;
 exports.Wheel = Wheel;
