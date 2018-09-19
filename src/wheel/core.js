@@ -76,8 +76,11 @@ export function coreModule(Wheel) {
         /**
          * 缓动代码
          */
+        let direction = _that._options.direction || 'vertical';
+        let pageAxes = direction == 'horizontal' ? 'pageX' : 'pageY';
+
         let nowTime = event.timeStamp || Date.now();
-        let v = (point.pageY - _that.lastMoveStart) / (nowTime - _that.lastMoveTime); // 最后一段时间手指划动速度
+        let v = (point[pageAxes] - _that.lastMoveStart) / (nowTime - _that.lastMoveTime); // 最后一段时间手指划动速度
         let dir = v > 0 ? -1 : 1; // 加速度方向
         let deceleration = dir * 0.0006 * -1;
         let duration = Math.abs(v / deceleration); // 速度消减至0所需时间
@@ -210,16 +213,18 @@ export function coreModule(Wheel) {
      */
     Wheel.prototype._updateInertiaParams = function (event, isStart) {
         let _that = this;
+        let direction = _that._options.direction || 'vertical';
+        let pageAxes = direction == 'horizontal' ? 'pageX' : 'pageY';
         let point = event.changedTouches ? event.changedTouches[0] : event;
         if (isStart) {
-            _that.lastMoveStart = point.pageY;
+            _that.lastMoveStart = point[pageAxes];
             _that.lastMoveTime = event.timeStamp || Date.now();
             _that.startAngle = _that._angle;
         } else {
             let nowTime = event.timeStamp || Date.now();
             if (nowTime - _that.lastMoveTime > 300) {
                 _that.lastMoveTime = nowTime;
-                _that.lastMoveStart = point.pageY;
+                _that.lastMoveStart = point[pageAxes];
             }
         }
         _that.stopInertiaMove = true;
@@ -232,6 +237,8 @@ export function coreModule(Wheel) {
         let startY = null;
         let gendY = null;
         let isPicking = false;
+        let direction = _that._options.direction || 'vertical';
+        let pageAxes = direction == 'horizontal' ? 'pageX' : 'pageY';
         _el.addEventListener(EVENT_TYPE.EVENT_START, function (event) {
             isPicking = true;
             event.preventDefault();
@@ -243,7 +250,7 @@ export function coreModule(Wheel) {
                 index: index
             });
             _that._wheelEl.style[prefixStyle('transition')] = '';
-            startY = (event.changedTouches ? event.changedTouches[0] : event).pageY;
+            startY = (event.changedTouches ? event.changedTouches[0] : event)[pageAxes];
             gendY = startY;
             lastAngle = _that._angle;
             _that._updateInertiaParams(event, true);
@@ -266,7 +273,7 @@ export function coreModule(Wheel) {
                 return;
             }
             event.preventDefault();
-            let endY = (event.changedTouches ? event.changedTouches[0] : event).pageY;
+            let endY = (event.changedTouches ? event.changedTouches[0] : event)[pageAxes];
             gendY = endY;
             let dragRange = endY - startY;
             let dragAngle = _that._calcAngle(dragRange);

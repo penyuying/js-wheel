@@ -77,6 +77,8 @@ export function domModule(Wheel) {
     Wheel.prototype._calcElementItemPostion = function () {
         let _that = this;
         let _elItems = _that._elItems;
+        
+        let direction = _that._options.direction || 'vertical';
         if (_elItems && _elItems.length > 0) {
             for (let index = 0; index < _elItems.length; index++) {
                 const item = _elItems[index];
@@ -84,7 +86,7 @@ export function domModule(Wheel) {
                 item._index = index;
                 item.angle = _that.endAngle;
                 item.style[prefixStyle('transformOrigin')] = 'center center -' + _that.r + 'px';
-                item.style[prefixStyle('transform')] = 'translateZ(' + _that.r + 'px) rotateX(' + (-_that.endAngle) + 'deg)';
+                item.style[prefixStyle('transform')] = 'translateZ(' + _that.r + 'px) ' + (direction == 'horizontal' ? 'rotateY(' : 'rotateX(-') + _that.endAngle + 'deg)';
             }
         }
         // _that._elItems.forEach(function (item, index) {
@@ -146,8 +148,9 @@ export function domModule(Wheel) {
     Wheel.prototype._setAngle = function (angle) {
         let _that = this;
         let _options = _that._options;
+        let direction = _options.direction || 'vertical';
         _that._angle = angle;
-        _that._wheelEl.style[prefixStyle('transform')] = 'perspective(' + _options.perspective + ') rotateY(0deg) rotateX(' + angle + 'deg)';
+        _that._wheelEl.style[prefixStyle('transform')] = 'perspective(' + _options.perspective + ') '+(direction == 'horizontal' ? 'rotateY(-' : 'rotateX(') + angle + 'deg)';
         _that._setItemVisibility(angle);
     };
 }

@@ -3,7 +3,7 @@ import { extend } from '../utils/utils';
 
 import { DEFAULT_OPTIONS } from './defaultConfig';
 
-import { MAX_EXCEED, VISIBLE_RANGE, DEFAULT_ITEM_HEIGHT } from './constant';
+import { MAX_EXCEED, VISIBLE_RANGE, DEFAULT_ITEM_HEIGHT,DEFAULT_ITEM_WIDTH } from './constant';
 import { isIos } from '../utils/browser';
 
 import { prefixStyle } from '../utils/prefixStyle';
@@ -22,24 +22,39 @@ export function initModule(Wheel) {
     Wheel.prototype.refresh = function () {
         let _that = this;
         let _options = _that._options;
-        let _elItems = _that._elItems;
         let index = _that.index;
+        let direction = _that._options.direction || 'vertical';
+
         _that._resetItems();
+
+        let _elItems = _that._elItems;
 
         // 轮的高度
         _that.height = _that._el.offsetHeight;
+        _that.width = _that._el.offsetWidth;
+
+        let sizeParam;
+        let defaultSize;
 
          // 半径
-        _that.r = _that.height / 2 - _options.blurWidth;
+        if (direction == 'horizontal') { 
+            _that.r = _that.width / 2 - _options.blurWidth;
+            defaultSize = DEFAULT_ITEM_WIDTH;
+            sizeParam = 'Width';
+        } else if (direction == 'vertical' || !direction) {
+            _that.r = _that.height / 2 - _options.blurWidth;
+            defaultSize = DEFAULT_ITEM_HEIGHT;
+            sizeParam = 'Height';
+        }
 
         // 直径
         _that.d = _that.r * 2;
 
         // 列表项的高度
-        _that.itemHeight = _options.itemHeight || (_elItems && _elItems.length > 0 ? _elItems[0].offsetHeight : DEFAULT_ITEM_HEIGHT);
+        _that.itemSize = _options['item' + sizeParam] || (_elItems && _elItems.length > 0 ? _elItems[0]['offset' + sizeParam] : defaultSize);
 
         // 每项旋转的角度
-        _that.itemAngle = parseInt(_that._calcAngle(_that.itemHeight * 0.8));
+        _that.itemAngle = parseInt(_that._calcAngle(_that.itemSize * 0.8));
 
         // 高亮项的角度
         _that.hightlightRange = _that.itemAngle / 2;

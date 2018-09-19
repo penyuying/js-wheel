@@ -219,6 +219,7 @@ function eventModule(Fn) {
 var MAX_EXCEED = 30; // 最大超过角度
 var VISIBLE_RANGE = 90; // 可视角度
 var DEFAULT_ITEM_HEIGHT = 40; // 列表项默认高度
+var DEFAULT_ITEM_WIDTH = 100; // 列表项默认宽度度
 
 var elementStyle = document.createElement('div').style;
 
@@ -336,6 +337,8 @@ function domModule(Wheel) {
     Wheel.prototype._calcElementItemPostion = function () {
         var _that = this;
         var _elItems = _that._elItems;
+
+        var direction = _that._options.direction || 'vertical';
         if (_elItems && _elItems.length > 0) {
             for (var index = 0; index < _elItems.length; index++) {
                 var item = _elItems[index];
@@ -343,7 +346,7 @@ function domModule(Wheel) {
                 item._index = index;
                 item.angle = _that.endAngle;
                 item.style[prefixStyle('transformOrigin')] = 'center center -' + _that.r + 'px';
-                item.style[prefixStyle('transform')] = 'translateZ(' + _that.r + 'px) rotateX(' + -_that.endAngle + 'deg)';
+                item.style[prefixStyle('transform')] = 'translateZ(' + _that.r + 'px) ' + (direction == 'horizontal' ? 'rotateY(' : 'rotateX(-') + _that.endAngle + 'deg)';
             }
         }
         // _that._elItems.forEach(function (item, index) {
@@ -405,8 +408,9 @@ function domModule(Wheel) {
     Wheel.prototype._setAngle = function (angle) {
         var _that = this;
         var _options = _that._options;
+        var direction = _options.direction || 'vertical';
         _that._angle = angle;
-        _that._wheelEl.style[prefixStyle('transform')] = 'perspective(' + _options.perspective + ') rotateY(0deg) rotateX(' + angle + 'deg)';
+        _that._wheelEl.style[prefixStyle('transform')] = 'perspective(' + _options.perspective + ') ' + (direction == 'horizontal' ? 'rotateY(-' : 'rotateX(') + angle + 'deg)';
         _that._setItemVisibility(angle);
     };
 }
@@ -527,8 +531,11 @@ function coreModule(Wheel) {
         /**
          * 缓动代码
          */
+        var direction = _that._options.direction || 'vertical';
+        var pageAxes = direction == 'horizontal' ? 'pageX' : 'pageY';
+
         var nowTime = event.timeStamp || Date.now();
-        var v = (point.pageY - _that.lastMoveStart) / (nowTime - _that.lastMoveTime); // 最后一段时间手指划动速度
+        var v = (point[pageAxes] - _that.lastMoveStart) / (nowTime - _that.lastMoveTime); // 最后一段时间手指划动速度
         var dir = v > 0 ? -1 : 1; // 加速度方向
         var deceleration = dir * 0.0006 * -1;
         var duration = Math.abs(v / deceleration); // 速度消减至0所需时间
@@ -662,16 +669,18 @@ function coreModule(Wheel) {
      */
     Wheel.prototype._updateInertiaParams = function (event, isStart) {
         var _that = this;
+        var direction = _that._options.direction || 'vertical';
+        var pageAxes = direction == 'horizontal' ? 'pageX' : 'pageY';
         var point = event.changedTouches ? event.changedTouches[0] : event;
         if (isStart) {
-            _that.lastMoveStart = point.pageY;
+            _that.lastMoveStart = point[pageAxes];
             _that.lastMoveTime = event.timeStamp || Date.now();
             _that.startAngle = _that._angle;
         } else {
             var nowTime = event.timeStamp || Date.now();
             if (nowTime - _that.lastMoveTime > 300) {
                 _that.lastMoveTime = nowTime;
-                _that.lastMoveStart = point.pageY;
+                _that.lastMoveStart = point[pageAxes];
             }
         }
         _that.stopInertiaMove = true;
@@ -684,6 +693,8 @@ function coreModule(Wheel) {
         var startY = null;
         var gendY = null;
         var isPicking = false;
+        var direction = _that._options.direction || 'vertical';
+        var pageAxes = direction == 'horizontal' ? 'pageX' : 'pageY';
         _el.addEventListener(EVENT_TYPE.EVENT_START, function (event) {
             isPicking = true;
             event.preventDefault();
@@ -695,7 +706,7 @@ function coreModule(Wheel) {
                 index: index
             });
             _that._wheelEl.style[prefixStyle('transition')] = '';
-            startY = (event.changedTouches ? event.changedTouches[0] : event).pageY;
+            startY = (event.changedTouches ? event.changedTouches[0] : event)[pageAxes];
             gendY = startY;
             lastAngle = _that._angle;
             _that._updateInertiaParams(event, true);
@@ -718,7 +729,7 @@ function coreModule(Wheel) {
                 return;
             }
             event.preventDefault();
-            var endY = (event.changedTouches ? event.changedTouches[0] : event).pageY;
+            var endY = (event.changedTouches ? event.changedTouches[0] : event)[pageAxes];
             gendY = endY;
             var dragRange = endY - startY;
             var dragAngle = _that._calcAngle(dragRange);
@@ -746,7 +757,9 @@ var DEFAULT_OPTIONS = {
     perspective: '1000px', // 视角
     blurWidth: 20, // 留边的距离
     itemHeight: 0, // 列表项高度（0为自动）
-    selectedIndex: 0 // 默认选中项
+    itemWidth: 0, // 列表项宽度（0为自动，横向滑动时需设置此项）
+    selectedIndex: 0, // 默认选中项
+    direction: 'vertical' //['verticle'|'horizontal']方向
 };
 
 var platform = navigator.platform.toLowerCase();
@@ -760,83 +773,98 @@ var isIos = (userAgent.indexOf('iphone') > -1 || userAgent.indexOf('ipad') > -1 
  * @param {Function} Wheel 构造函数
  */
 function initModule(Wheel) {
-        /**
-         * 刷新
-         *
-         */
-        Wheel.prototype.refresh = function () {
-                var _that = this;
-                var _options = _that._options;
-                var _elItems = _that._elItems;
-                var index = _that.index;
-                _that._resetItems();
+    /**
+     * 刷新
+     *
+     */
+    Wheel.prototype.refresh = function () {
+        var _that = this;
+        var _options = _that._options;
+        var index = _that.index;
+        var direction = _that._options.direction || 'vertical';
 
-                // 轮的高度
-                _that.height = _that._el.offsetHeight;
+        _that._resetItems();
 
-                // 半径
-                _that.r = _that.height / 2 - _options.blurWidth;
+        var _elItems = _that._elItems;
 
-                // 直径
-                _that.d = _that.r * 2;
+        // 轮的高度
+        _that.height = _that._el.offsetHeight;
+        _that.width = _that._el.offsetWidth;
 
-                // 列表项的高度
-                _that.itemHeight = _options.itemHeight || (_elItems && _elItems.length > 0 ? _elItems[0].offsetHeight : DEFAULT_ITEM_HEIGHT);
+        var sizeParam = void 0;
+        var defaultSize = void 0;
 
-                // 每项旋转的角度
-                _that.itemAngle = parseInt(_that._calcAngle(_that.itemHeight * 0.8));
+        // 半径
+        if (direction == 'horizontal') {
+            _that.r = _that.width / 2 - _options.blurWidth;
+            defaultSize = DEFAULT_ITEM_WIDTH;
+            sizeParam = 'Width';
+        } else if (direction == 'vertical' || !direction) {
+            _that.r = _that.height / 2 - _options.blurWidth;
+            defaultSize = DEFAULT_ITEM_HEIGHT;
+            sizeParam = 'Height';
+        }
 
-                // 高亮项的角度
-                _that.hightlightRange = _that.itemAngle / 2;
+        // 直径
+        _that.d = _that.r * 2;
 
-                // 可视角度
-                _that.visibleRange = VISIBLE_RANGE;
+        // 列表项的高度
+        _that.itemSize = _options['item' + sizeParam] || (_elItems && _elItems.length > 0 ? _elItems[0]['offset' + sizeParam] : defaultSize);
 
-                // 轮的开始角度
-                _that.beginAngle = 0;
+        // 每项旋转的角度
+        _that.itemAngle = parseInt(_that._calcAngle(_that.itemSize * 0.8));
 
-                // 超过的角度
-                _that.beginExceed = _that.beginAngle - MAX_EXCEED;
+        // 高亮项的角度
+        _that.hightlightRange = _that.itemAngle / 2;
 
-                // 轮当前的角度
-                _that._angle = _that.beginAngle;
+        // 可视角度
+        _that.visibleRange = VISIBLE_RANGE;
 
-                if (isIos) {
-                        // ios设置旋转的中心轴
-                        _that._wheelEl.style[prefixStyle('transformOrigin')] = 'center center ' + _that.r + 'px';
-                }
+        // 轮的开始角度
+        _that.beginAngle = 0;
 
-                _that._calcElementItemPostion(true);
+        // 超过的角度
+        _that.beginExceed = _that.beginAngle - MAX_EXCEED;
 
-                // 设置默认项
-                index > 0 && _that.wheelTo(index);
-        };
+        // 轮当前的角度
+        _that._angle = _that.beginAngle;
 
-        /**
-         * 初始化
-         *
-         * @param {HTMLElement} el 元素节点
-         * @param {Object} options 选项
-         */
-        Wheel.prototype._init = function (el, options) {
-                var _that = this;
-                var _options = _that._initOptions(options);
-                _that._initEl(el);
-                _that.refresh();
-                _that.index = _options.selectedIndex || 0;
-                _that.index > 0 && _that.wheelTo(_that.index);
-        };
-        /**
-         * 初始化选项
-         *
-         * @param {Object} options 选项
-         * @returns {Object}
-         */
-        Wheel.prototype._initOptions = function (options) {
-                var _that = this;
-                _that._options = extend({}, DEFAULT_OPTIONS, options);
-                return _that._options;
-        };
+        if (isIos) {
+            // ios设置旋转的中心轴
+            _that._wheelEl.style[prefixStyle('transformOrigin')] = 'center center ' + _that.r + 'px';
+        }
+
+        _that._calcElementItemPostion(true);
+
+        // 设置默认项
+        index > 0 && _that.wheelTo(index);
+    };
+
+    /**
+     * 初始化
+     *
+     * @param {HTMLElement} el 元素节点
+     * @param {Object} options 选项
+     */
+    Wheel.prototype._init = function (el, options) {
+        var _that = this;
+        var _options = _that._initOptions(options);
+        _that._initEl(el);
+        _that.refresh();
+        _that.index = _options.selectedIndex || 0;
+        _that.index > 0 && _that.wheelTo(_that.index);
+    };
+    /**
+     * 初始化选项
+     *
+     * @param {Object} options 选项
+     * @returns {Object}
+     */
+    Wheel.prototype._initOptions = function (options) {
+        var _that = this;
+        _that._options = extend({}, DEFAULT_OPTIONS, options);
+        return _that._options;
+    };
 }
 
 // import { easing } from './utils/easing';

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Wheel demo</title>
+    <script src="dist/Wheel.min.js"></script>
+    <script>
+        function createNode(html, data) {
+            var _cloneItem = document.createDocumentFragment();
+            var _divDom = document.createElement('div');
+
+            _cloneItem.appendChild(_divDom);
+            // html = iReplaceHtmlData(html, data);
+            _divDom.innerHTML = html;
+            var _divDomChilds = _divDom.childNodes || [];
+
+            for (var i = 0; i < _divDomChilds.length; i++) {
+                _cloneItem.appendChild(_divDomChilds[i]);
+            }
+            _cloneItem.removeChild(_divDom);
+
+            return _cloneItem;
+        }
+        window.onload = function () {
+            var wheel = new Wheel.Wheel('.wheel-wrap', {
+                wheelEl: '.wheel',
+                wheelItemEl: '.wheel-item',
+                itemWidth: 80,
+                direction: 'horizontal'
+            });
+            wheel.on('beforeInit', function () { // 初始化之前
+                console.log('beforeInit');
+            })
+
+            wheel.on('init', function () { // 初始化后
+                console.log('init');
+            })
+
+            wheel.on('scrollStart', function (data) { // 开始滚动
+                console.log('scrollStart', data);
+            })
+
+            wheel.on('scroll', function (data) { // 正在滚动
+                console.log('scroll', data);
+            })
+
+            wheel.on('scrollEnd', function (data) { // 滚动结束后
+                console.log('scrollEnd', data);
+            })
+
+            // wheel.wheelTo(5, 200);
+
+            // setTimeout(function () {
+            //     var wheelEl = document.querySelector('.wheel');
+            //     wheelEl.appendChild(createNode('<li class="wheel-item">21xxxxxxxx</li>'));
+            //     wheelEl.appendChild(createNode('<li class="wheel-item">21xxxxxxxx</li>'));
+            //     wheelEl.appendChild(createNode('<li class="wheel-item">21xxxxxxxx</li>'));
+            // wheel.refresh();
+            // }, 1000);
+        }
+    </script>
+    <style>
+        .wheel-box {
+            background-color: #ddd;
+            position: relative;
+            height: 200px;
+            /* overflow: hidden; */
+            /*使用这个时不正常*/
+            border: solid 1px rgba(0, 0, 0, 0.1);
+            -webkit-user-select: none;
+            user-select: none;
+            box-sizing: border-box;
+            list-style: none;
+        }
+
+        .wheel-wrap {
+            box-sizing: border-box;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            /* overflow: hidden; */
+            /*使用这个时不正常*/
+            -webkit-mask-box-image: -webkit-linear-gradient(bottom, transparent, transparent 5%, #fff 20%, #fff 80%, transparent 95%, transparent);
+            -webkit-mask-box-image: linear-gradient(top, transparent, transparent 5%, #fff 20%, #fff 80%, transparent 95%, transparent);
+        }
+
+        .wheel,
+        .wheel-rule {
+            box-sizing: border-box;
+            padding: 0px;
+            margin: 0px;
+            width: 100%;
+            height: 36px;
+            line-height: 36px;
+            position: absolute;
+            left: 0px;
+            top: 50%;
+            margin-top: -18px;
+        }
+
+        .wheel-rule-bg {
+            z-index: 0;
+        }
+
+        .wheel-rule-ft {
+            z-index: 2;
+            border-top: solid 1px rgba(0, 0, 0, 0.1);
+            border-bottom: solid 1px rgba(0, 0, 0, 0.1);
+        }
+
+        .wheel {
+            z-index: 1;
+            -webkit-transform-style: preserve-3d;
+            transform-style: preserve-3d;
+            -webkit-transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+            transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+        }
+
+        .wheel .wheel-item {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            text-align: center;
+            vertical-align: middle;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            box-sizing: border-box;
+            font-size: 16px;
+            font-family: "Helvetica Neue", "Helvetica", "Arial", "sans-serif";
+            color: #888;
+            padding: 0px 8px;
+            white-space: nowrap;
+            -webkit-text-overflow: ellipsis;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            cursor: default;
+            visibility: hidden;
+            list-style: none;
+        }
+
+        .wheel .wheel-item.active,
+        .wheel .wheel-item.visible {
+            visibility: visible;
+        }
+
+        .wheel .wheel-item.active {
+            color: #222;
+        }
+
+        .wheel-demo {
+            position: fixed;
+            left: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wheel-demo">
+        <div class="wheel-box">
+            <div class="wheel-wrap">
+                <div class="wheel-rule wheel-rule-ft"></div>
+                <ul class="wheel">
+                    <!-- li.wheel-item*20>{$xxxxxxxx} -->
+                    <li class="wheel-item">1xxxx</li>
+                    <li class="wheel-item">2xxxx</li>
+                    <li class="wheel-item">3xxxx</li>
+                    <li class="wheel-item">4xxxx</li>
+                    <li class="wheel-item">5xxxx</li>
+                    <li class="wheel-item">6xxxx</li>
+                    <li class="wheel-item">7xxxx</li>
+                    <li class="wheel-item">8xxxx</li>
+                    <li class="wheel-item">9xxxx</li>
+                    <li class="wheel-item">10xxxx</li>
+                    <li class="wheel-item">11xxxx</li>
+                    <li class="wheel-item">12xxxx</li>
+                    <li class="wheel-item">13xxxx</li>
+                    <li class="wheel-item">14xxxx</li>
+                    <li class="wheel-item">15xxxx</li>
+                    <li class="wheel-item">16xxxx</li>
+                    <li class="wheel-item">17xxxx</li>
+                    <li class="wheel-item">18xxxx</li>
+                    <li class="wheel-item">19xxxx</li>
+                    <li class="wheel-item">20xxxx</li>
+                </ul>
+                <div class="wheel-rule wheel-rule-bg"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
