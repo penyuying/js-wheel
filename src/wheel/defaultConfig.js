@@ -6,5 +6,7 @@ export const DEFAULT_OPTIONS = {
     perspective: '1000px', // 视角
     blurWidth: 20, // 留边的距离
     itemHeight: 0, // 列表项高度（0为自动）
-    selectedIndex: 0 // 默认选中项
+    itemWidth: 0, // 列表项宽度（0为自动，横向滑动时需设置此项）
+    selectedIndex: 0, // 默认选中项
+    direction: 'vertical' //['verticle'|'horizontal']方向
 };
