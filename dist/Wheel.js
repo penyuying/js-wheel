@@ -1,5 +1,5 @@
 /*!
- * js-wheel v1.0.8
+ * js-wheel v1.0.9
  * (c) 2017-2018 penyuying
  * Released under the MIT License.
  */
@@ -415,9 +415,10 @@ function domModule(Wheel) {
     };
 }
 
-var EVENT_TYPE = function () {
+var getEventType = function getEventType(type) {
     var res = {};
-    if ('ontouchstart' in window) {
+    if ('ontouchstart' in window || type === 'touchstart') {
+        // type === 'touchstart' 为了兼容微信开发者工具的事件
         res.isTouchable = true;
         res.EVENT_START = 'touchstart';
         res.EVENT_MOVE = 'touchmove';
@@ -431,7 +432,7 @@ var EVENT_TYPE = function () {
     res.EVENT_CANCEL = 'touchcancel';
     res.EVENT_CLICK = 'click';
     return res;
-}();
+};
 
 /**
  * 弧度转成角度
@@ -571,6 +572,9 @@ function coreModule(Wheel) {
     Wheel.prototype._scrollDistAngle = function (nowTime, startAngle, distAngle, duration, callback) {
         var _that = this;
         _that.stopInertiaMove = false;
+        if (isNaN(distAngle)) {
+            return;
+        }
         (function (nowTime, startAngle, distAngle, duration) {
             var frameInterval = 13;
             var stepCount = duration / frameInterval;
@@ -695,6 +699,16 @@ function coreModule(Wheel) {
         var isPicking = false;
         var direction = _that._options.direction || 'vertical';
         var pageAxes = direction == 'horizontal' ? 'pageX' : 'pageY';
+        if ('ontouchstart' in window) {
+            _that.eventType = getEventType();
+        } else if (!this.eventType) {
+            _el.addEventListener('touchmove', getEvent);
+            document.addEventListener('touchmove', getEvent);
+            _el.addEventListener('mousemove', getEvent);
+            document.addEventListener('mousemove', getEvent);
+            return;
+        }
+        var EVENT_TYPE = this.eventType;
         _el.addEventListener(EVENT_TYPE.EVENT_START, function (event) {
             isPicking = true;
             event.preventDefault();
@@ -746,6 +760,22 @@ function coreModule(Wheel) {
                 index: _that.getSelectedIndex()
             });
         }, false);
+        /**
+         * 获取事件类型名称
+         *
+         * @param {Event} evt 事件对象
+         */
+        function getEvent(evt) {
+            if (_that.eventType) {
+                return;
+            }
+            _that.eventType = getEventType(evt.type);
+            _that._bindEvent();
+            _el.removeEventListener('touchmove', getEvent);
+            document.removeEventListener('touchmove', getEvent);
+            _el.removeEventListener('mousemove', getEvent);
+            document.removeEventListener('mousemove', getEvent);
+        }
     };
 }
 
@@ -759,7 +789,7 @@ var DEFAULT_OPTIONS = {
     itemHeight: 0, // 列表项高度（0为自动）
     itemWidth: 0, // 列表项宽度（0为自动，横向滑动时需设置此项）
     selectedIndex: 0, // 默认选中项
-    direction: 'vertical' //['verticle'|'horizontal']方向
+    direction: 'vertical' // ['verticle'|'horizontal']方向
 };
 
 var platform = navigator.platform.toLowerCase();
@@ -904,7 +934,7 @@ Wheel.use(domModule);
 Wheel.use(coreModule);
 Wheel.use(initModule);
 
-Wheel.Version = '1.0.8';
+Wheel.Version = '1.0.9';
 
 exports['default'] = Wheel;
 exports.Wheel = Wheel;

@@ -8,5 +8,5 @@ export const DEFAULT_OPTIONS = {
     itemHeight: 0, // 列表项高度（0为自动）
     itemWidth: 0, // 列表项宽度（0为自动，横向滑动时需设置此项）
     selectedIndex: 0, // 默认选中项
-    direction: 'vertical' //['verticle'|'horizontal']方向
+    direction: 'vertical' // ['verticle'|'horizontal']方向
 };

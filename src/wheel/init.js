@@ -3,7 +3,7 @@ import { extend } from '../utils/utils';
 
 import { DEFAULT_OPTIONS } from './defaultConfig';
 
-import { MAX_EXCEED, VISIBLE_RANGE, DEFAULT_ITEM_HEIGHT,DEFAULT_ITEM_WIDTH } from './constant';
+import { MAX_EXCEED, VISIBLE_RANGE, DEFAULT_ITEM_HEIGHT, DEFAULT_ITEM_WIDTH } from './constant';
 import { isIos } from '../utils/browser';
 
 import { prefixStyle } from '../utils/prefixStyle';
@@ -37,7 +37,7 @@ export function initModule(Wheel) {
         let defaultSize;
 
          // 半径
-        if (direction == 'horizontal') { 
+        if (direction == 'horizontal') {
             _that.r = _that.width / 2 - _options.blurWidth;
             defaultSize = DEFAULT_ITEM_WIDTH;
             sizeParam = 'Width';

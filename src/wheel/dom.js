@@ -77,7 +77,7 @@ export function domModule(Wheel) {
     Wheel.prototype._calcElementItemPostion = function () {
         let _that = this;
         let _elItems = _that._elItems;
-        
+
         let direction = _that._options.direction || 'vertical';
         if (_elItems && _elItems.length > 0) {
             for (let index = 0; index < _elItems.length; index++) {
@@ -150,7 +150,7 @@ export function domModule(Wheel) {
         let _options = _that._options;
         let direction = _options.direction || 'vertical';
         _that._angle = angle;
-        _that._wheelEl.style[prefixStyle('transform')] = 'perspective(' + _options.perspective + ') '+(direction == 'horizontal' ? 'rotateY(-' : 'rotateX(') + angle + 'deg)';
+        _that._wheelEl.style[prefixStyle('transform')] = 'perspective(' + _options.perspective + ') ' + (direction == 'horizontal' ? 'rotateY(-' : 'rotateX(') + angle + 'deg)';
         _that._setItemVisibility(angle);
     };
 }

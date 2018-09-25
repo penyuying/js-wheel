@@ -43,7 +43,7 @@ Wheel.use(domModule);
 Wheel.use(coreModule);
 Wheel.use(initModule);
 
-Wheel.Version = '1.0.8';
+Wheel.Version = '1.0.9';
 
 export default Wheel;
 export {

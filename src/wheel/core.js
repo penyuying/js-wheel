@@ -1,5 +1,5 @@
 
-import { EVENT_TYPE } from '../utils/eventType';
+import { getEventType } from '../utils/eventType';
 import { rad2deg } from '../utils/rad2deg';
 import { prefixStyle } from '../utils/prefixStyle';
 import { easing } from '../utils/easing';
@@ -116,6 +116,9 @@ export function coreModule(Wheel) {
     Wheel.prototype._scrollDistAngle = function (nowTime, startAngle, distAngle, duration, callback) {
         let _that = this;
         _that.stopInertiaMove = false;
+        if (isNaN(distAngle)) {
+            return;
+        }
         (function (nowTime, startAngle, distAngle, duration) {
             let frameInterval = 13;
             let stepCount = duration / frameInterval;
@@ -239,6 +242,16 @@ export function coreModule(Wheel) {
         let isPicking = false;
         let direction = _that._options.direction || 'vertical';
         let pageAxes = direction == 'horizontal' ? 'pageX' : 'pageY';
+        if ('ontouchstart' in window) {
+            _that.eventType = getEventType();
+        } else if (!this.eventType) {
+            _el.addEventListener('touchmove', getEvent);
+            document.addEventListener('touchmove', getEvent);
+            _el.addEventListener('mousemove', getEvent);
+            document.addEventListener('mousemove', getEvent);
+            return;
+        }
+        const EVENT_TYPE = this.eventType;
         _el.addEventListener(EVENT_TYPE.EVENT_START, function (event) {
             isPicking = true;
             event.preventDefault();
@@ -290,5 +303,21 @@ export function coreModule(Wheel) {
                 index: _that.getSelectedIndex()
             });
         }, false);
+        /**
+         * 获取事件类型名称
+         *
+         * @param {Event} evt 事件对象
+         */
+        function getEvent(evt) {
+            if (_that.eventType) {
+                return;
+            }
+            _that.eventType = getEventType(evt.type);
+            _that._bindEvent();
+            _el.removeEventListener('touchmove', getEvent);
+            document.removeEventListener('touchmove', getEvent);
+            _el.removeEventListener('mousemove', getEvent);
+            document.removeEventListener('mousemove', getEvent);
+        }
     };
 }

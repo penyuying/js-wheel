@@ -1,6 +1,6 @@
-export const EVENT_TYPE = (() => {
+export const getEventType = (type) => {
     let res = {};
-    if ('ontouchstart' in window) {
+    if ('ontouchstart' in window || type === 'touchstart') { // type === 'touchstart' 为了兼容微信开发者工具的事件
         res.isTouchable = true;
         res.EVENT_START = 'touchstart';
         res.EVENT_MOVE = 'touchmove';
@@ -14,4 +14,4 @@ export const EVENT_TYPE = (() => {
     res.EVENT_CANCEL = 'touchcancel';
     res.EVENT_CLICK = 'click';
     return res;
-})();
+};
