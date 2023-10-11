@@ -1,5 +1,5 @@
 /*!
- * js-wheel v1.0.11
+ * js-wheel v1.0.12
  * (c) 2017-2023 penyuying
  * Released under the MIT License.
  */
@@ -795,7 +795,7 @@ var DEFAULT_OPTIONS = {
 var platform = navigator.platform.toLowerCase();
 var userAgent = navigator.userAgent.toLowerCase();
 
-var browserVersion$1 = (userAgent.match(/version\/(.+?)\s/i) || [])[1]; // 浏览器版本号
+var browserVersion = (userAgent.match(/version\/(.+?)\s/i) || [])[1]; // 浏览器版本号
 var isIos = (userAgent.indexOf('iphone') > -1 || userAgent.indexOf('ipad') > -1 || userAgent.indexOf('ipod') > -1) && (platform.indexOf('iphone') > -1 || platform.indexOf('ipad') > -1 || platform.indexOf('ipod') > -1);
 
 /**

@@ -4,7 +4,7 @@ import { extend } from '../utils/utils';
 import { DEFAULT_OPTIONS } from './defaultConfig';
 
 import { MAX_EXCEED, VISIBLE_RANGE, DEFAULT_ITEM_HEIGHT, DEFAULT_ITEM_WIDTH } from './constant';
-import { isIos } from '../utils/browser';
+import { isIos, browserVersion } from '../utils/browser';
 
 import { prefixStyle } from '../utils/prefixStyle';
 
