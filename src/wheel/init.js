@@ -36,7 +36,7 @@ export function initModule(Wheel) {
         let sizeParam;
         let defaultSize;
 
-         // 半径
+        // 半径
         if (direction == 'horizontal') {
             _that.r = _that.width / 2 - _options.blurWidth;
             defaultSize = DEFAULT_ITEM_WIDTH;
@@ -70,8 +70,11 @@ export function initModule(Wheel) {
 
         // 轮当前的角度
         _that._angle = _that.beginAngle;
-
-        if (isIos) { // ios设置旋转的中心轴
+        /**
+         * ios版本号
+         */
+        const num = parseFloat(browserVersion) || 0;
+        if (isIos && num < 17) { // ios设置旋转的中心轴
             _that._wheelEl.style[prefixStyle('transformOrigin')] = 'center center ' + _that.r + 'px';
         }
 
