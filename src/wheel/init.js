@@ -4,9 +4,10 @@ import { extend } from '../utils/utils';
 import { DEFAULT_OPTIONS } from './defaultConfig';
 
 import { MAX_EXCEED, VISIBLE_RANGE, DEFAULT_ITEM_HEIGHT, DEFAULT_ITEM_WIDTH } from './constant';
-import { isIos, browserVersion } from '../utils/browser';
+import { isIos, osVersion } from '../utils/browser';
 
 import { prefixStyle } from '../utils/prefixStyle';
+import diffVersion from '../utils/diffVersion';
 
 /**
  * 初始化模块
@@ -73,8 +74,7 @@ export function initModule(Wheel) {
         /**
          * ios版本号
          */
-        const num = parseFloat(browserVersion) || 0;
-        if (isIos && num < 17) { // ios设置旋转的中心轴
+        if (isIos && (diffVersion(osVersion, '16.1.0') + '' !== '1')) { // ios设置旋转的中心轴
             _that._wheelEl.style[prefixStyle('transformOrigin')] = 'center center ' + _that.r + 'px';
         }
 

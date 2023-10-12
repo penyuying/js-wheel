@@ -1,5 +1,5 @@
 /*!
- * js-wheel v1.0.12
+ * js-wheel v1.0.13
  * (c) 2017-2023 penyuying
  * Released under the MIT License.
  */
@@ -795,8 +795,48 @@ var DEFAULT_OPTIONS = {
 var platform = navigator.platform.toLowerCase();
 var userAgent = navigator.userAgent.toLowerCase();
 
-var browserVersion = (userAgent.match(/version\/(.+?)\s/i) || [])[1]; // 浏览器版本号
+var osVersion = (userAgent.match(/os [\d._]*/gi) + '').replace(/[^0-9|_.]/gi, '').replace(/_/gi, '.'); // 系统版本号
 var isIos = (userAgent.indexOf('iphone') > -1 || userAgent.indexOf('ipad') > -1 || userAgent.indexOf('ipod') > -1) && (platform.indexOf('iphone') > -1 || platform.indexOf('ipad') > -1 || platform.indexOf('ipod') > -1);
+
+/**
+ * 比较两个版本
+ *
+ * @export
+ * @param {String} nowVer 当前版本
+ * @param {String} ver 比较的版本
+ * @returns {-1|0|1} 返回-1：当前版本小;0：和当前版本相等;1：当前版本大
+ */
+function diffVersion(nowVer, ver) {
+    var res = 0;
+    nowVer = (nowVer || '0') + '';
+    ver = (ver || '0') + '';
+    var nowArr = nowVer.split('.');
+    var arr = ver.split('.');
+    var len = Math.max(nowArr.length, arr.length);
+    var mlen = Math.min(nowArr.length, arr.length);
+    var offset = len - mlen;
+    if (offset > 0) {
+        // 两个数组不一样的时候补齐
+        var aOffset = new Array(offset).fill(0);
+        if (nowArr.length > arr.length) {
+            arr = aOffset.concat(arr);
+        } else {
+            nowArr = aOffset.concat(nowArr);
+        }
+    }
+    for (var i = 0; i < len; i++) {
+        var now = parseInt(nowArr[i] || '0', 10) || 0;
+        var item = parseInt(arr[i] || '0', 10) || 0;
+        if (now < item) {
+            res = -1;
+            break;
+        } else if (now > item) {
+            res = 1;
+            break;
+        }
+    }
+    return res;
+}
 
 /**
  * 初始化模块
@@ -863,8 +903,7 @@ function initModule(Wheel) {
         /**
          * ios版本号
          */
-        var num = parseFloat(browserVersion) || 0;
-        if (isIos && num < 17) {
+        if (isIos && diffVersion(osVersion, '16.1.0') + '' !== '1') {
             // ios设置旋转的中心轴
             _that._wheelEl.style[prefixStyle('transformOrigin')] = 'center center ' + _that.r + 'px';
         }
